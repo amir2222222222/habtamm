@@ -1,0 +1,118 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+      display: flex;
+      flex-direction: column;
+      gap: 100px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color:  #aeacac;
+    color: #333;
+  }
+
+  .container {
+    position: relative;
+    margin: 0 auto;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .card h3 {
+    margin-top: 0;
+    color: #007b8f;
+    border-bottom: 2px solid #007b8f;
+    padding-bottom: 5px;
+    font-size: 18px;
+  }
+
+  label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #007b8f;
+  }
+
+  input[type="text"], select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+
+  .checkbox-group {
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .checkbox-group label {
+    display: block;
+    margin: 5px 0;
+    font-weight: normal;
+    position: relative;
+  }
+
+  .checkbox-group label:hover::after {
+    content: '';
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left:150px;
+    bottom: -50px;
+    width: 120px;
+    height: 120px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border: 1px solid #888;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .checkbox-group label:nth-child(1):hover::after {
+  background-image: url('patters/any-horizontal.png');
+}
+.checkbox-group label:nth-child(2):hover::after {
+  background-image: url('patters/any-vertical.png');
+}
+.checkbox-group label:nth-child(3):hover::after {
+  background-image: url('patters/any-cross.png');
+}
+.checkbox-group label:nth-child(4):hover::after {
+  background-image: url('patters/4-single-corner.png');
+}
+.checkbox-group label:nth-child(5):hover::after {
+  background-image: url('patters/4-single-middle.png');
+}
+
+  button {
+    margin-top: 15px;
+    background-color: #000000;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button:hover {
+    background-color: #292d2f;
+  }

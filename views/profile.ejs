@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'MedievalSharp', cursive;
+      height: 100vh;
+      width: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      grid-template-columns: 100%;
+      overflow: hidden;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+    }
+
+    .maincont {
+      width: 500px;
+      height: 90%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 20px 0 20px 0;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 10px var(--border-color);
+      overflow: hidden;
+    }
+
+    .left {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .right {
+      background-color: var(--bg-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      gap: 20px;
+    }
+
+    .profile-card {
+      width: 100%;
+      padding: 20px;
+      background-color: var(--bg-color);
+      border-radius: 15px;
+      box-shadow: 0 0 10px var(--border-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .profile-label {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    .profile-value {
+      font-size: 1.1em;
+      padding: 8px 12px;
+      background-color: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-left: 5px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 0 8px var(--border-color);
+    }
+
+    form h3 {
+      margin-bottom: 10px;
+      font-size: 1.3em;
+      color: var(--text-color);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 1em;
+      color: var(--text-color);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 1em;
+      box-shadow: 0 0 6px var(--border-color);
+    }
+
+    input::placeholder {
+      color: var(--text-color);
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .update-btn {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  background: none;
+  transition: transform 0.2s ease, color 0.3s ease;
+  user-select: none;
+  outline: none;
+}
+
+/* Outer soft glow */
+.update-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: -2;
+}
+
+/* Inner filled layer using bg-color */
+.update-btn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 6px;
+  background-color: var(--bg-color);
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.681),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.619),
+    0 0 10px var(--border-color),
+    0 0 20px var(--border-color);
+  z-index: -1;
+  transition: all 100ms ease-out;
+}
+
+/* Hover effect */
+.update-btn:hover::after {
+  inset: 0;
+  transition-timing-function: ease-in;
+}
+
+.update-btn:hover {
+  transform: scale(1.02);
+}
+
+/* Active press effect */
+.update-btn:active::after {
+  inset: 4px;
+  opacity: 0.9;
+}
+
+.update-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+
+    .success-message {
+      color: var(--border-color);
+      font-size: 0.9em;
+      margin: 5px 0 10px 0;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.85em;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .maincont {
+        width: 90%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        top: unset;
+        left: unset;
+        transform: none;
+        margin: 30px auto;
+      }
+
+      .left,
+      .right {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('partials/header') -%>
+
+    <div class="maincont">
+      <!-- Left: Profile Info -->
+      <div class="left">
+        <div class="profile-card">
+          <div>
+            <div class="profile-label">Full Name</div>
+            <div class="profile-value">
+              <%= name || 'N/A' %>
+            </div>
+          </div>
+          <div>
+            <div class="profile-label">Shop Name</div>
+            <div class="profile-value">
+              <%= shopname || 'Not Available' %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Edit Forms -->
+      <div class="right">
+        <!-- Edit Name Form -->
+        <form action="/name" method="POST" class="edit-account-container">
+          <h3>Update Name</h3>
+          <% if (successName) { %>
+            <p class="success-message">
+              <%= successName %>
+            </p>
+            <% } %>
+              <label for="name">New Name</label>
+              <input type="text" id="name" name="name" placeholder="Enter new name" required />
+              <button class="update-btn" type="submit">Save Name</button>
+        </form>
+
+        <!-- Edit User Commission Form -->
+        <form action="/commission" method="POST" class="edit-account-container">
+          <h3>Update Commission</h3>
+          <% if (successCommission) { %>
+            <p class="success-message">
+              <%= successCommission %>
+            </p>
+            <% } %>
+              <label for="userCommission">User Commission (%)</label>
+              <input type="number" id="userCommission" name="userCommission" value="<%= userCommission %>"
+                placeholder="0" min="1" max="100" required />
+              <button class="update-btn" type="submit">Save Commission</button>
+        </form>
+      </div>
+    </div>
+</body>
+
+</html>

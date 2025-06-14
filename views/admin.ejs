@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration & Users List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-links {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-links button {
+            padding: 12px 24px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .nav-links button:hover {
+            background: #0056b3;
+        }
+
+        .register-form,
+        .user-list-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            display: none;
+        }
+
+        .register-form.active,
+        .user-list-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .user-list-container {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .user-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .user-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .user-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .update-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .update-form {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f1f1f1;
+        }
+
+        .update-form .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .update-form label {
+            flex: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .update-form input[type="text"] {
+            flex: 2;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .update-form .save-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .update-form .save-btn:hover {
+            background: #0056b3;
+        }
+
+        .logout-container button {
+            background: #ffc107;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .logout-container button:hover {
+            background: #e0a800;
+        }
+    </style>
+</head>
+
+<body>
+    <form class="logout-container" action="/logout" method="POST">
+        <button type="submit" title="Log Out">🚪 Log Out</button>
+    </form>
+
+    <div class="container">
+        <div class="nav-links">
+            <button onclick="showSection('admin')">Sign Up Admin</button>
+            <button onclick="showSection('user')">Sign Up User</button>
+            <button onclick="showSection('list')">Users List</button>
+        </div>
+    
+        <form id="adminForm" class="register-form" onsubmit="submitForm(event, 'admin')">
+            <h2><i class="fa fa-user-shield"></i> Sign Up Admin</h2>
+            <div class="form-group"><input type="text" name="name" placeholder="Name" required></div>
+            <div class="form-group"><input type="password" name="password" placeholder="Password" required></div>
+            <button class="submit-btn" type="submit"><i class="fa fa-paper-plane"></i> Submit</button>
+        </form>
+    
+        <form id="userForm" class="register-form" onsubmit="submitForm(event, 'user')">
+            <h2><i class="fa fa-user-plus"></i> Sign Up User</h2>
+            <div class="form-group"><input type="text" name="name" placeholder="Name" required></div>
+            <div class="form-group"><input type="password" name="password" placeholder="Password" required></div>
+            <div class="form-group"><input type="number" name="credit" placeholder="Credit" required></div>
+            <div class="form-group">
+                <input type="number" name="user_commission" placeholder="User Commission" required>
+            </div>
+            <div class="form-group">
+                <input type="number" name="owner_commission" placeholder="Owner Commission" required>
+            </div>
+            <button class="submit-btn" type="submit"><i class="fa fa-paper-plane"></i> Submit</button>
+        </form>
+    
+        <div id="userListContainer" class="user-list-container active">
+            <h2 class="user-header"><i class="fa fa-users"></i> Users List</h2>
+            <div id="userList"></div>
+        </div>
+    </div>
+    
+
+    <script>
+        function showSection(section) {
+            ['adminForm', 'userForm', 'userListContainer'].forEach(id =>
+                document.getElementById(id).classList.remove('active')
+            );
+
+            if (section === 'admin') {
+                document.getElementById('adminForm').classList.add('active');
+            } else if (section === 'user') {
+                document.getElementById('userForm').classList.add('active');
+            } else if (section === 'list') {
+                document.getElementById('userListContainer').classList.add('active');
+                fetchUsers();
+            }
+        }
+
+        async function submitForm(event, role) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            for (const key in data) {
+                data[key] = data[key].trim();
+            }
+
+            if (Object.values(data).some(v => !v)) return alert("All fields must be filled.");
+
+            const res = await fetch(`/signup/${role}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert(`${role.charAt(0).toUpperCase() + role.slice(1)} registered successfully.`);
+                event.target.reset();
+                if (role === 'user') fetchUsers();
+            } else {
+                const error = await res.json();
+                alert(error.error || 'Error registering user.');
+            }
+        }
+
+        async function fetchUsers() {
+            const res = await fetch('/users_list');
+            const users = await res.json();
+            renderUserList(users);
+        }
+
+        function renderUserList(users) {
+            const container = document.getElementById("userList");
+            container.innerHTML = "";
+
+            users.forEach(user => {
+                const card = document.createElement("div");
+                card.className = "user-card";
+
+                const info = document.createElement("div");
+                info.innerHTML = `
+    <strong>Name:</strong> ${user.name}<br>
+    <strong>Username:</strong> ${user.username}<br>
+    <strong>Role:</strong> ${user.role}<br>
+    <strong>Balance:</strong> ${user.balance} ብር<br>
+    <strong>Credit:</strong> ${user.credit} ብር<br>
+    <strong>Last Credit Time:</strong> ${new Date(user.lastCreditTime).toLocaleDateString()}
+`;
+
+                card.appendChild(info);
+
+                const actions = document.createElement("div");
+                actions.className = "user-actions";
+
+                const del = document.createElement("button");
+                del.innerText = "Delete";
+                del.onclick = () => deleteUser(user._id);
+
+                const edit = document.createElement("button");
+                edit.innerText = "Edit";
+                edit.onclick = () => toggleUpdateForm(user._id);
+
+                actions.append(del, edit);
+                card.appendChild(actions);
+
+                const form = document.createElement("div");
+                form.className = "update-form";
+                form.id = `updateForm-${user._id}`;
+
+                ['credit', 'user_commission', 'owner_commission'].forEach(field => {
+                    const group = document.createElement("div");
+                    group.className = "form-group";
+
+                    const label = document.createElement("label");
+                    label.innerText = field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) + ": ";
+
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.name = field;
+                    input.placeholder = field;
+
+                    const save = document.createElement("button");
+                    save.innerText = "Update";
+                    save.onclick = async (e) => {
+                        e.preventDefault();
+                        const value = input.value.trim();
+                        if (!value) return alert("Value required");
+                        await saveUserChanges(user._id, { [field]: value });
+                        form.style.display = "none";
+                    };
+
+                    group.append(label, input, save);
+                    form.appendChild(group);
+                });
+
+                card.appendChild(form);
+                container.appendChild(card);
+            });
+        }
+
+        function toggleUpdateForm(id) {
+            document.querySelectorAll('.update-form').forEach(f => {
+                if (f.id !== `updateForm-${id}`) f.style.display = "none";
+            });
+            const form = document.getElementById(`updateForm-${id}`);
+            form.style.display = form.style.display === "block" ? "none" : "block";
+        }
+
+        async function saveUserChanges(id, updates) {
+            await fetch(`/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            fetchUsers();
+        }
+
+        async function deleteUser(id) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                await fetch(`/users/${id}`, { method: 'DELETE' });
+                fetchUsers();
+            }
+        }
+
+        window.onload = () => {
+            if (document.getElementById('userListContainer').classList.contains('active')) {
+                fetchUsers();
+            }
+        };
+    </script>
+    
+    
+</body>
+
+</html>

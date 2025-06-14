@@ -1,0 +1,77 @@
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #aeacac;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  overflow: hidden;
+}
+
+.grid-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(16,75px);
+  grid-gap: 5px;
+}
+.cell {
+ height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #111;
+  border: 2px solid #fff;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.bingo-letter {
+   background-color: #ff4b2b;
+  color: #fff;
+}
+.number-cell {
+  background-color: #ffffff;
+}
+.highlight{
+  background-color: rgb(168, 48, 27); /* Highlight color */
+}
+.controls {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  justify-content: center;
+  background: #b8b3b3;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.controls button {
+  background-color: #fff;
+  width: 150px;
+  color: #000;
+  height: 60px;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background-color: #000000ba;
+  color: white;
+  border: inset 1px solid silver;
+}

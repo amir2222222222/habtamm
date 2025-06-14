@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    /* General Reset and Box Sizing */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+  
+    /* Body Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('/amir.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+      background-color: #f4f4f4;
+      /* Fallback color if image fails */
+      color: #333;
+      /* Default text color */
+    }
+  
+    /* Login Box Styles */
+    .login-box {
+      background-color: rgb(28, 22, 22);
+      border-radius: 30px 0 10px;
+      width: 100%;
+      max-width: 360px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+  
+    /* Phone Number Display */
+    .phone {
+      background-color: #000000;
+      border-radius: 10px;
+      padding: 5px;
+      font-size: 16px;
+      color: white;
+      margin-bottom: 20px;
+    }
+  
+    /* Login Box Heading */
+    .login-box h1 {
+      font-size: 28px;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+  
+    /* Form Labels */
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+  
+    /* Input Fields */
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 18px;
+      color: #000000;
+      background-color: #fff;
+    }
+  
+    /* Input Focus State */
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+  
+    /* Password Toggle Wrapper */
+    .password-wrapper {
+      position: relative;
+    }
+  
+    /* Toggle Password Button */
+    #togglePassword {
+      position: absolute;
+      top: 40%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #007bff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  
+    /* Checkbox Group */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 20px;
+      margin-top: 10px;
+      color: white;
+    }
+  
+    /* Checkbox Input */
+    .checkbox-group input {
+      margin-right: 8px;
+    }
+  
+    /* Login Button */
+    .login-btn {
+      width: 100%;
+      background-color: #007bff;
+      color: #fff;
+      padding: 12px;
+      border: 3px solid white;
+      border-radius: 6px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 700;
+    }
+  
+    /* Login Button Hover State */
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+  
+    /* Error Message */
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: none;
+    }
+  
+    /* Invalid Input State */
+    input.invalid {
+      border: 2px solid red;
+    }
+  
+    /* Valid Input State */
+    input.valid {
+      border: 2px solid green;
+    }
+  
+    /* Media Query for Small Screens */
+    @media (max-width: 575.98px) {
+      .login-box h1 {
+        font-size: 24px;
+      }
+  
+      input,
+      .login-btn {
+        font-size: 14px;
+      }
+    }
+  
+    </style>
+</head>
+
+<body>
+  <div class="login-box">
+    <h1 class="phone">📞 0939675767</h1>
+    <h1>Sign in</h1>
+    <form action="/login" method="POST" id="loginForm">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" required autocomplete="username" />
+      <div id="usernameError" class="error">Username must be 3-30 chars, alphanumeric or _</div>
+
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input type="password" name="password" id="password" required autocomplete="current-password" />
+        <button type="button" id="togglePassword">Show</button>
+      </div>
+      <div id="passwordError" class="error">
+        Password must be at least 8 characters and include upper/lowercase, digit, and special char.
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="ageConfirm" name="ageConfirm" required />
+        <label for="ageConfirm">I confirm I am 18 years or older</label>
+      </div>
+
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+  </div>
+
+  <script>
+    
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('password');
+    const usernameField = document.getElementById('username');
+    const loginForm = document.getElementById('loginForm');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const passwordError = document.getElementById('passwordError');
+    const usernameError = document.getElementById('usernameError');
+
+    function validateUsername() {
+      const username = usernameField.value.trim();
+      const valid = /^[a-zA-Z0-9_]{3,30}$/.test(username);
+      if (!valid) {
+        usernameField.classList.add('invalid');
+        usernameField.classList.remove('valid');
+        usernameError.style.display = 'block';
+      } else {
+        usernameField.classList.remove('invalid');
+        usernameField.classList.add('valid');
+        usernameError.style.display = 'none';
+      }
+      return valid;
+    }
+
+    function validatePassword() {
+      const pwd = passwordField.value;
+      const valid = pwd.length >= 8 &&
+        /[a-z]/.test(pwd) &&
+        /[A-Z]/.test(pwd) &&
+        /\d/.test(pwd) &&
+        /[\W_]/.test(pwd);
+      if (!valid) {
+        passwordField.classList.add('invalid');
+        passwordField.classList.remove('valid');
+        passwordError.style.display = 'block';
+      } else {
+        passwordField.classList.remove('invalid');
+        passwordField.classList.add('valid');
+        passwordError.style.display = 'none';
+      }
+      return valid;
+    }
+
+    function updateSubmitButton() {
+      const isFormValid = validateUsername() && validatePassword() && loginForm.ageConfirm.checked;
+      submitBtn.disabled = !isFormValid;
+    }
+
+    togglePassword.addEventListener('click', () => {
+      const isPassword = passwordField.type === 'password';
+      passwordField.type = isPassword ? 'text' : 'password';
+      togglePassword.textContent = isPassword ? 'Hide' : 'Show';
+    });
+
+    usernameField.addEventListener('input', () => {
+      validateUsername();
+      updateSubmitButton();
+    });
+
+    passwordField.addEventListener('input', () => {
+      validatePassword();
+      updateSubmitButton();
+    });
+
+    loginForm.ageConfirm.addEventListener('change', () => {
+      updateSubmitButton();
+    });
+
+    updateSubmitButton();
+
+    loginForm.addEventListener('submit', (e) => {
+      if (!validateUsername() || !validatePassword() || !loginForm.ageConfirm.checked) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+
+</html>

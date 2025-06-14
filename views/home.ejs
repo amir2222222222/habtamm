@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bingo Fantasy</title>
+  <!-- Google Fonts & Font Awesome (assuming you load them in your header partial) -->
+<style>
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'MedievalSharp', cursive;
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr 12fr 2fr;
+  grid-template-columns: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.bingo_grid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+}
+
+.bingo_numbers {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  padding: 5px;
+  border-radius: 10px;
+  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(15, 1fr);
+  gap: 5px;
+}
+
+.cell {
+  background: var(--accent-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border: 5px solid var(--border-color);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s;
+  position: relative;
+}
+
+.cell.toggled {
+  background-color: black;
+  color: white;
+  border: 5px solid rgb(255, 0, 0);
+}
+
+.cell.toggled::after {
+  content: attr(data-num);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background-color: rebeccapurple;
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: pop 0.4s ease-out forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(8);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(10);
+    opacity: 0;
+  }
+}
+
+.controllers {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: space-around;
+  padding: 10px 20px;
+  background-color: var(--bg-color);
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.buttons {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controll {
+  position: relative;
+  z-index: 0;
+  flex: 1 1 auto;
+  height: 60%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 80px;
+  padding: 18px 28px;
+  background: none;
+  color: var(--text-color);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.controll::before,
+.controll::after {
+  content: "";
+  position: absolute;
+  border-radius: 80px;
+  transition: all 100ms ease-out;
+  pointer-events: none;
+}
+
+.controll::before {
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: -2;
+}
+
+.controll::after {
+  inset: 4px;
+  background-color: var(--accent-color);
+  z-index: -1;
+}
+
+.controll:hover:not(:disabled)::after {
+  inset: 8px; /* Shrink on hover */
+  transition-timing-function: ease-in;
+}
+
+.controll:active:not(:disabled) {
+  color: var(--bg-color);
+}
+
+.controll:active:not(:disabled)::after {
+  opacity: 0.85;
+}
+
+.controll:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.input-label {
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.display-input {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 3px solid var(--border-color);
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.6),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+  width: 60%;
+  font-size: 2rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+  padding: 3px;
+  transition: box-shadow 0.3s;
+}
+
+.icon-button {
+  position: relative;
+  z-index: 0;
+  background: none;
+  color: var(--text-color);
+  font-size: 1rem;
+  border: none;
+  padding: 6px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.3s ease;
+  user-select: none;
+  outline: none;
+}
+
+.icon-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: -2;
+}
+
+.icon-button::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  z-index: -1;
+  transition: all 100ms ease-out;
+}
+
+.icon-button:hover::after {
+  inset: 0;
+  transition-timing-function: ease-in;
+}
+
+.icon-button:active {
+  color: var(--bg-color);
+}
+
+.icon-button:active::after {
+  inset: 4px;
+  opacity: 0.85;
+}
+
+.icon-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.lock-icon {
+  margin-left: 10px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.lock-icon i {
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+/* Improved Cartela Input Wrapper and Button */
+
+.cartela-wrapper {
+  position: relative;
+  margin-bottom: 5px;
+  height: 50px;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: stretch;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow:
+    inset 2px 2px 6px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.5);
+}
+
+#cartela {
+  flex: 3;
+  height: 100%;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 5px solid  var(--accent-color);
+  outline: none;
+  padding: 0 12px;
+  border-right: none;
+}
+
+.cartela-wrapper button {
+  flex: 1;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  padding: 0 10px;
+}
+
+.cartela-wrapper button:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .controllers {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buttons,
+  .input-box {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cartela-wrapper {
+    max-width: 140px;
+  }
+
+  #cartela {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+
+  .cartela-wrapper button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+  .alert-msg {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(0, 0, 0);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 18px;
+    z-index: 9999;
+    display: none;
+    transition: opacity 0.3s ease;
+  }
+  .alert-msg.alert-success {
+    background-color: rgba(0, 128, 0, 0.9);
+  }
+  .alert-msg.show {
+    display: block;
+  }
+</style>
+</style>
+  
+</head>
+
+<body>
+  <%- include('partials/header') -%>
+
+    <div class="main_cont bingo_grid">
+      <div class="bingo_numbers"></div>
+    </div>
+
+    <div class="main_cont controllers">
+      <!-- ZG Input -->
+      <div class="input-box">
+        <span class="input-label">
+          <i class="fas fa-layer-group"></i> ZG
+          <span class="lock-icon" data-target="zg"><i></i></span>
+        </span>
+        <div class="input-group">
+          <button class="icon-button" onclick="adjustValue('zg', -1)">
+            <i class="fas fa-minus"></i>
+          </button>
+          <input name="zg" type="text" id="zg" class="display-input" placeholder="1" readonly>
+          <button class="icon-button" onclick="adjustValue('zg', 1)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bet Birr Input -->
+      <div class="input-box">
+        <span class="input-label">
+          <i class="fas fa-coins"></i> Bet Birr
+          <span class="lock-icon" data-target="birr"><i></i></span>
+        </span>
+        <div class="input-group">
+          <button class="icon-button" onclick="adjustValue('birr', -5)">
+            <i class="fas fa-minus"></i>
+          </button>
+          <input name="bet" type="text" id="birr" class="display-input" placeholder="10" readonly>
+          <button class="icon-button" onclick="adjustValue('birr', 5)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="controll play" onclick="submitPlay()">
+          <i class="fas fa-play"></i> &nbsp; Play
+        </button>
+      </div>
+
+      <div class="buttons">
+        <button class="controll sync" id="sync">
+          <i class="fas fa-sync-alt"></i> &nbsp; Sync Previous
+        </button>
+      </div>
+
+      <!-- Cartela submit: centered and functional -->
+      <div class="buttons">
+        <div class="cartela-wrapper">
+          <input id="cartela"  placeholder="Inter Cartelas"
+            onkeydown="if(event.key==='Enter'){ submitCartela(); }">
+          <button onclick="submitCartela()">submite</button>
+        </div>
+      </div>
+    </div>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const inp = document.getElementById('cartela');
+          inp.focus();
+          });
+
+      const fallbackDefaults = { zg: '1', birr: '10' };
+      function initializeInputs() {
+        for (const id in fallbackDefaults) {
+          const inp = document.getElementById(id);
+          const lockIcon = document.querySelector(`.lock-icon[data-target="${id}"] i`);
+          const stored = localStorage.getItem(id);
+          if (stored !== null) {
+            inp.value = stored;
+            lockIcon?.classList.add("fas", "fa-lock");
+          } else {
+            inp.value = fallbackDefaults[id];
+            lockIcon?.classList.add("fas", "fa-lock-open");
+          }
+        }
+      }
+
+      function adjustValue(id, delta) {
+        const inp = document.getElementById(id);
+        let v = parseInt(inp.value) || 0;
+        if (id === 'zg') v = Math.max(1, Math.min(5, v + delta));
+        else v = Math.max(10, v + delta);
+        inp.value = v;
+        const lockIcon = document.querySelector(`.lock-icon[data-target="${id}"] i`);
+        if (lockIcon?.classList.contains('fa-lock')) localStorage.setItem(id, v);
+      }
+
+      document.querySelectorAll(".lock-icon").forEach(lock => {
+        lock.addEventListener("click", () => {
+          const id = lock.dataset.target;
+          const inp = document.getElementById(id);
+          const icon = lock.querySelector("i");
+          if (icon.classList.contains("fa-lock")) {
+            icon.classList.replace("fa-lock", "fa-lock-open");
+            localStorage.removeItem(id);
+          } else {
+            icon.classList.replace("fa-lock-open", "fa-lock");
+            localStorage.setItem(id, inp.value);
+          }
+        });
+      });
+
+      initializeInputs();
+
+      const buzzSound = new Audio('/buzz.mp3');
+      buzzSound.preload = 'auto';
+      buzzSound.load();
+
+      const grid = document.querySelector(".bingo_numbers");
+      const selectedCells = new Set();
+
+      for (let i = 1; i <= 150; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = i;
+        cell.dataset.num = i;
+        cell.addEventListener("click", () => toggleCell(i, cell));
+        grid.appendChild(cell);
+      }
+
+      function toggleCell(num, cell) {
+        if (selectedCells.has(num)) {
+          selectedCells.delete(num);
+          cell.classList.remove("toggled");
+        } else {
+          selectedCells.add(num);
+          cell.classList.add("toggled");
+        }
+      }
+
+      document.getElementById('sync').addEventListener('click', () => {
+        const saved = localStorage.getItem('gamePayload');
+        if (!saved) {
+          showAlert("የተመዘገበ መረጃ አልተገኘም", "error");
+          return;
+        }
+        const p = JSON.parse(saved);
+        document.getElementById('zg').value = p.linechaker || '';
+        document.getElementById('birr').value = p.betbirr || '';
+        document.querySelectorAll('.cell').forEach(c => {
+          const n = +c.dataset.num;
+          if (p.selectedcarts.includes(n)) {
+            c.classList.add('toggled');
+            selectedCells.add(n);
+          } else {
+            c.classList.remove('toggled');
+            selectedCells.delete(n);
+          }
+        });
+      });
+
+      function submitPlay() {
+        const z = parseInt(document.getElementById("zg").value);
+        const b = parseInt(document.getElementById("birr").value);
+        if (!z || !b || selectedCells.size === 0) {
+          showAlert("የተሳሳተ የካርድ ቁጥር", "error");
+          return;
+        }
+        const payload = {
+          selectedcarts: Array.from(selectedCells),
+          linechaker: z,
+          betbirr: b
+        };
+        localStorage.setItem('gamePayload', JSON.stringify(payload));
+        fetch("/home", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(res => {
+            if (res.redirected) window.location.href = res.url;
+            return res.json();
+          })
+          .catch(err => console.error(err));
+      }
+
+      function submitCartela() {
+        const inp = document.getElementById('cartela');
+        const n = parseInt(inp.value);
+        const val = inp.value.trim();
+
+        if (!val || isNaN(n)) {
+          showAlert("እባክዎ ቁጥር ያስገቡ", "error");
+          buzzSound.play();
+          inp.focus();
+        } else if (n < 1 || n > 150) {
+          showAlert("ቁጥሩ በ1 እና በ150 መካከል መሆን አለበት", "error");
+          buzzSound.play();
+          inp.focus();
+        } else if (selectedCells.has(n)) {
+          showAlert("ይህ ካርድ አስቀድሞ ተመርጧል", "error");
+          buzzSound.play();
+          inp.focus();
+        } else {
+          selectedCells.add(n);
+          const cell = grid.children[n - 1];
+          cell.classList.add("toggled");
+          inp.focus();
+        }
+
+        inp.value = '';
+        inp.focus();
+      }
+
+      function showAlert(message, type = "success") {
+        let alert = document.querySelector(".alert-msg");
+        if (!alert) {
+          alert = document.createElement("div");
+          alert.className = "alert-msg";
+          document.body.appendChild(alert);
+        }
+
+        alert.textContent = message;
+        alert.className = `alert-msg show alert-${type}`;
+
+        setTimeout(() => {
+          alert.classList.remove("show");
+        }, 800);
+      }
+    
+    </script>
+    
+</body>
+
+</html>

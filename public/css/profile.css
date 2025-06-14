@@ -1,0 +1,94 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #aeacac;
+    background-image: url('x.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    color: #DFFFD8;
+  }
+  /* === Edit Account Form Styling === */
+  .edit-account-container {
+    background-color: #f8f8c5;
+    margin: auto;
+    padding: 30px;
+    width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 40px;
+  }
+
+  .edit-account-box {
+    background-color: #fff;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+
+  .edit-account-box h3 {
+    font-size: 16px;
+    color: #189ab4;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .edit-account-box h3 i {
+    color: #189ab4;
+  }
+
+  .edit-account-box label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #3a3a3a;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .edit-account-box input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .edit-account-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .edit-account-actions button {
+    padding: 10px 20px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #00c2cb;
+    color: white;
+  }
+
+  .edit-account-actions button:hover {
+    background-color: #019ba2;
+  }

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Bingo Controls</title>
+    <style>
+        /* ======= Existing styles ======= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            grid-template-columns: 100%;
+            background-color: var(--bg-color);
+            font-family: 'MedievalSharp', cursive;
+        }
+
+        .main-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--border-color);
+            overflow: hidden;
+            width: 100%;
+            color: var(--text-color);
+        }
+
+        .column {
+            flex: 1 1 50%;
+            padding: 15px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: var(--text-color);
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: var(--text-color);
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
+
+        /* Hide spinner buttons */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .submit-btn {
+            position: relative;
+            z-index: 0;
+            width: 100%;
+            padding: 20px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+            background: none;
+            transition: transform 0.2s ease, color 0.3s ease;
+            user-select: none;
+            outline: none;
+        }
+
+        .submit-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: -2;
+        }
+
+        .submit-btn::after {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: 6px;
+            background-color: var(--bg-color);
+            box-shadow:
+                inset 2px 2px 5px rgba(0, 0, 0, 0.681),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.619),
+                0 0 10px var(--border-color),
+                0 0 20px var(--border-color);
+            z-index: -1;
+            transition: all 100ms ease-out;
+        }
+
+        .submit-btn:hover::after {
+            inset: 0;
+            transition-timing-function: ease-in;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.01);
+        }
+
+        .submit-btn:active::after {
+            inset: 4px;
+            opacity: 0.9;
+        }
+
+        .submit-btn:disabled {
+            cursor: default;
+            opacity: 0.5;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .pattern-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .box-display {
+            width: 200px;
+            height: 200px;
+            background-color: #004a7c93;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .box-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .column {
+                flex: 1 1 100%;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .column:last-child {
+                border-bottom: none;
+            }
+
+            .pattern-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        #progress-text {
+            color: #000;
+        }
+
+        /* ======= New styles for loading overlay and alerts ======= */
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(6px);
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .loading-box {
+            background-color: #ffffffdd;
+            color: #333;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            font-size: 18px;
+            font-family: Arial, sans-serif;
+            min-width: 320px;
+            user-select: none;
+        }
+
+        .alert-msg {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            z-index: 11000;
+            color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            max-width: 90%;
+            box-sizing: border-box;
+        }
+
+        .alert-msg.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .alert-success {
+            background-color: #28a745;
+            box-shadow: 0 0 15px #28a745cc;
+        }
+
+        .alert-error {
+            background-color: #dc3545;
+            box-shadow: 0 0 15px #dc3545cc;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/header') -%>
+
+        <div class="main-content">
+            <div class="container">
+                <!-- Speed Form -->
+                <div class="column">
+                    <h2>Speed</h2>
+                    <form action="/save-speed" method="POST">
+                        <label for="speed">Speed (1-5)</label>
+                        <input type="number" id="speed" name="speed" min="1" max="5" value="<%= GameSpeed %>" required>
+                        <button type="submit" class="submit-btn">Save Speed</button>
+                    </form>
+                </div>
+
+                <!-- Voice Form -->
+                <div class="column">
+                    <h2>Voice</h2>
+                    <form id="voice-form" action="/save-voice" method="POST">
+                        <label for="voice">Voice Type</label>
+                        <select id="voice" name="voice" required>
+                            <% voiceOptions.forEach(function(voice) { %>
+                                <option value="<%= voice %>" <%=voice===selectedVoice ? 'selected' : '' %>>
+                                    <%= voice.charAt(0).toUpperCase() + voice.slice(1) %>
+                                </option>
+                                <% }); %>
+                        </select>
+                        <button type="submit" class="submit-btn">Save Voice</button>
+                    </form>
+                </div>
+
+                <!-- Patterns Form -->
+                <div class="column">
+                    <h2>Patterns</h2>
+                    <form action="/save-patterns" method="POST">
+                        <div class="pattern-layout">
+                            <div class="box-display">
+                                <img id="pattern-img" src="/patters/any-vertical.png" alt="Pattern Preview"
+                                    style="display: block;" />
+                            </div>
+                            <div class="checkbox-group">
+                                <% Object.entries(patternLabels).forEach(([value, label])=> { %>
+                                    <label>
+                                        <input type="checkbox" name="pattern" value="<%= value %>"
+                                            <%=checkedPatterns.includes(value) ? 'checked' : '' %>
+                                        onmouseover="showImage('<%= value %>')" onmouseout="hideImage()" />
+                                            <%= label %>
+                                    </label>
+                                    <% }); %>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn">Save Patterns</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-box">
+                <p id="progress-text">Downloading voices... 0/75</p>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div id="alert-success" class="alert-msg alert-success"></div>
+        <div id="alert-error" class="alert-msg alert-error"></div>
+
+        <style>
+            /* Simple toast style for prompt messages */
+            #prompt-message {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 200px;
+                max-width: 80vw;
+                padding: 12px 24px;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: white;
+                background-color: #333;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+                z-index: 9999;
+                text-align: center;
+            }
+        
+            #prompt-message.show {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        
+            #prompt-message.success {
+                background-color: #28a745;
+                /* green */
+            }
+        
+            #prompt-message.error {
+                background-color: #dc3545;
+                /* red */
+            }
+        </style>
+        
+        <div id="prompt-message"></div>
+        
+        <style>
+            /* Simple toast style for prompt messages */
+            #prompt-message {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 200px;
+                max-width: 80vw;
+                padding: 12px 24px;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: white;
+                background-color: #333;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+                z-index: 9999;
+                text-align: center;
+            }
+        
+            #prompt-message.show {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        
+            #prompt-message.success {
+                background-color: #28a745;
+                /* green */
+            }
+        
+            #prompt-message.error {
+                background-color: #dc3545;
+                /* red */
+            }
+        </style>
+        
+        <div id="prompt-message"></div>
+        
+        <script>
+            const patternImages = {
+                h: '/patters/any-horizontal.png',
+                v: '/patters/any-vertical.png',
+                d: '/patters/any-cross.png',
+                sc: '/patters/4-single-middle.png',
+                lc: '/patters/4-single-corner.png'
+            };
+
+            const patternImg = document.getElementById('pattern-img');
+
+            function showImage(patternKey) {
+                if (patternImages[patternKey]) {
+                    patternImg.src = patternImages[patternKey];
+                    patternImg.style.display = 'block';
+                } else {
+                    patternImg.style.display = 'none';
+                }
+            }
+
+            function hideImage() {
+                patternImg.style.display = 'none';
+            }
+
+            function openVoiceDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open("VoiceDB", 1);
+
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains("voices")) {
+                            db.createObjectStore("voices", { keyPath: "id" });
+                        }
+                    };
+
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+
+            async function checkVoiceInDB(voice) {
+                try {
+                    const db = await openVoiceDB();
+                    return new Promise((resolve) => {
+                        const tx = db.transaction("voices", "readonly");
+                        const store = tx.objectStore("voices");
+                        const getRequest = store.get(`${voice}_1`);
+                        getRequest.onsuccess = () => resolve(!!getRequest.result);
+                        getRequest.onerror = () => resolve(false);
+                    });
+                } catch {
+                    return false;
+                }
+            }
+
+            async function saveVoiceToIndexedDB(voice, index, blob) {
+                try {
+                    const db = await openVoiceDB();
+                    return new Promise((resolve) => {
+                        const tx = db.transaction("voices", "readwrite");
+                        const store = tx.objectStore("voices");
+                        const putRequest = store.put({ id: `${voice}_${index}`, voice, index, blob });
+                        putRequest.onsuccess = () => resolve();
+                        putRequest.onerror = () => resolve();
+                    });
+                } catch {
+                    // ignore silently
+                }
+            }
+
+            // Show auto-hide prompt message (toast) for 3 seconds
+            function showPrompt(type, message) {
+                const promptEl = document.getElementById('prompt-message');
+                promptEl.textContent = message;
+                promptEl.className = ''; // reset classes
+                promptEl.classList.add(type === 'error' ? 'error' : 'success', 'show');
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    promptEl.classList.remove('show');
+                }, 3000);
+            }
+
+            async function downloadVoiceFile(voice, index) {
+                try {
+                    const response = await fetch(`/mp3/${voice}/${voice}${index}.mp3`);
+                    if (!response.ok) {
+                        // Silent failure — no prompt shown
+                        return false;
+                    }
+                    const blob = await response.blob();
+                    await saveVoiceToIndexedDB(voice, index, blob);
+                    return true;
+                } catch {
+                    // Silent failure
+                    return false;
+                }
+            }
+
+            async function downloadAllVoices(voice) {
+                const overlay = document.getElementById('loading-overlay');
+                const progressText = document.getElementById('progress-text');
+
+                overlay.style.display = 'flex';
+
+                for (let i = 1; i <= 75; i++) {
+                    progressText.textContent = `Downloading voices... ${i}/75`;
+                    await downloadVoiceFile(voice, i);
+                }
+
+                overlay.style.display = 'none';
+
+                showPrompt('success', `Voice pack "${voice}" downloaded.`);
+            }
+
+            document.getElementById('voice-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const voice = document.getElementById('voice').value.trim();
+                if (!voice) return;
+
+                try {
+                    const exists = await checkVoiceInDB(voice);
+
+                    if (!exists) {
+                        await downloadAllVoices(voice);
+                    } else {
+                        showPrompt('success', `"${voice}" voice is already downloaded.`);
+                    }
+
+                    e.target.submit();
+                } catch (err) {
+                    console.error(err);
+                    showPrompt('error', 'An error occurred while saving voice.');
+                }
+            });
+        </script>
+</body>
+
+</html>

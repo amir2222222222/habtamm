@@ -1,0 +1,116 @@
+/* CSS FILE: styles.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+ 
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #aeacac;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  color: #DFFFD8;
+}
+
+
+
+.grid-container {
+  position: relative;
+  width: 100%;
+  max-width: 85%;
+  padding: 1rem;
+  margin: 0 auto;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.grid-header {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #1c3c23;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1.2fr);
+  grid-template-rows: repeat(8, 40px);
+  gap: 2px;
+  margin-top: 1rem;
+}
+
+.cell {
+  background-color: #2b00ffd6;
+  border: 2px solid black;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+  border-radius: 4px;
+  user-select: none;
+  font-size: 20px;
+  font-weight: bolder;
+  transition: background-color 0.1s;
+}
+
+.cell.active {
+  background-color: #521d1d;
+  color: #ffffff;
+  border: 1px solid #2b00ff;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 10%;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.controls label {
+  color: #000000;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+  text-align: center;
+}
+
+.controls button, .controls input {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background:  #51504c;
+  color: #32155d;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgb(45, 43, 43);
+}
+
+.controls button:hover, .controls input:hover {
+  background-color: #32312e;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.controls input[type="number"] {
+  max-width: 100px;
+  text-align: center;
+}
+
+.controls input[readonly] {
+  background-color: #1f201f68;
+  cursor: default;
+}
