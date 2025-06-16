@@ -74,7 +74,7 @@
             padding: 12px;
             font-size: 16px;
             color: var(--text-color);
-            background-color: transparent;
+            background-color: var(--bg-color);
             border: 2px solid var(--border-color);
             border-radius: 10px;
             outline: none;
@@ -95,78 +95,127 @@
         }
 
         .submit-btn {
-            position: relative;
-            z-index: 0;
-            width: 100%;
-            padding: 20px;
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            color: var(--text-color);
-            cursor: pointer;
-            background: none;
-            transition: transform 0.2s ease, color 0.3s ease;
-            user-select: none;
-            outline: none;
-        }
+  position: relative;
+  margin-top: 10px;
+  z-index: 0;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 80px;
+  padding: 10px 20px;
+  background: none;
+  color: var(--accent-text-color);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
 
-        .submit-btn::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 8px;
-            background-color: rgba(0, 0, 0, 0.1);
-            z-index: -2;
-        }
+.submit-btn::before,
+.submit-btn::after {
+  content: "";
+  position: absolute;
+  border-radius: 80px;
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
 
-        .submit-btn::after {
-            content: "";
-            position: absolute;
-            inset: 4px;
-            border-radius: 6px;
-            background-color: var(--bg-color);
-            box-shadow:
-                inset 2px 2px 5px rgba(0, 0, 0, 0.681),
-                inset -2px -2px 5px rgba(255, 255, 255, 0.619),
-                0 0 10px var(--border-color),
-                0 0 20px var(--border-color);
-            z-index: -1;
-            transition: all 100ms ease-out;
-        }
+.submit-btn::before {
+  inset: 0;
+  background-color: var(--border-color);
+  z-index: -2;
+}
 
-        .submit-btn:hover::after {
-            inset: 0;
-            transition-timing-function: ease-in;
-        }
+.submit-btn::after {
+  inset: 6px; /* Initial inner padding */
+  background-color: var(--accent-color);
+  z-index: -1;
+  transition: inset 0.25s ease, background-color 0.3s;
+}
 
-        .submit-btn:hover {
-            transform: scale(1.01);
-        }
+/* Hover effect – expands outward */
+.submit-btn:hover:not(:disabled)::after {
+  inset: 0;
+  transition-timing-function: ease-in;
+}
 
-        .submit-btn:active::after {
-            inset: 4px;
-            opacity: 0.9;
-        }
+/* Optional: subtle glow on hover */
+.submit-btn:hover:not(:disabled)::before {
+  box-shadow: 0 0 12px var(--accent-color);
+}
 
-        .submit-btn:disabled {
-            cursor: default;
-            opacity: 0.5;
-        }
+/* On click (active) – color inversion + opacity */
+.submit-btn:active:not(:disabled) {
+  color: var(--bg-color);
+}
 
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
+.submit-btn:active:not(:disabled)::after {
+  opacity: 0.85;
+}
 
-        .checkbox-group input {
-            margin-right: 10px;
-            transform: scale(1.2);
-            cursor: pointer;
-        }
+/* Disabled style */
+.submit-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Better spacing between checkbox and text */
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-color);
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.checkbox-group input[type="checkbox"] {
+  appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid #94a3b8; /* subtle border */
+  border-radius: 0.25rem;
+  background-color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+  background-color: #2563eb; /* blue when checked */
+  border-color: #2563eb;
+}
+
+.checkbox-group input[type="checkbox"]::after {
+  content: '';
+  width: 0.4rem;
+  height: 0.7rem;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+.checkbox-group input[type="checkbox"]:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
 
         .pattern-layout {
             display: flex;
@@ -181,7 +230,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 10px;
             overflow: hidden;
             flex-shrink: 0;
         }

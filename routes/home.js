@@ -137,7 +137,7 @@ router.post("/home", user, async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 10000000 // 10 seconds
+      maxAge: 10000 // 10 seconds
     });
 
     res.redirect("/bingo_play");

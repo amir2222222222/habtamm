@@ -6,17 +6,18 @@
   <script>
     (function () {
       var themes = {
-        "soft-neutral": ['#f5f7fa', '#1e293b', '#3b82f6', '#ccc'],
-        "warm": ['#ffedd5', '#7c2d12', '#ea580c', '#fbbf24'],
-        "calm": ['#f1f5f9', '#1e3a8a', '#0ea5e9', '#93c5fd'],
-        "earthy": ['#fefce8', '#365314', '#84cc16', '#d9f99d'],
-        "indigo": ['#c7d2fe', '#312e81', '#6366f1', '#a5b4fc'],
-        "sunset-glow": ['#fff1e6', '#5b21b6', '#f97316', '#f59e0b'],
-        "mint-cream": ['#e6fff7', '#1f2937', '#10b981', '#34d399'],
-        "blush-rose": ['#fdf2f8', '#1e1b4b', '#f472b6', '#e879f9'],
-        "deep-ocean": ['#0f172a', '#e0f2fe', '#0891b2', '#0ea5e9'],
-        "cyber-neon": ['#0d0c1d', '#f0f0f0', '#f43f5e', '#22d3ee']
+        "soft-neutral": ['#f8fafc', '#0f172a', '#2563eb', '#d1d5db'],         // Clean, calm
+        "warm": ['#fff7ed', '#3b1d0c', '#d97706', '#fcd34d'],         // Cozy and inviting
+        "calm": ['#f1f5f9', '#1e293b', '#3b82f6', '#cbd5e1'],         // Balanced and relaxed
+        "earthy": ['#fafaf5', '#2e3a32', '#6b8e23', '#a3bfa6'],         // Natural and grounded
+        "indigo": ['#eef2ff', '#312e81', '#6366f1', '#a5b4fc'],         // Vibrant yet modern
+        "sunset-glow": ['#fff7f0', '#5a2b0f', '#f97316', '#fbbf24'],         // Warm glow with energy
+        "mint-cream": ['#ecfdf5', '#065f46', '#10b981', '#6ee7b7'],         // Fresh, vibrant contrast
+        "blush-rose": ['#fff1f2', '#4b1d45', '#db2777', '#f9a8d4'],         // Soft, romantic contrast
+        "main": ['#f5f5f5', '#1e1e1e', '#ffd700', '#00443b']          // High clarity, gold-brand feel
       };
+
+
 
       var name = localStorage.getItem('theme');
       if (name && themes[name]) {
@@ -53,7 +54,7 @@
     }
 
     .dark-mode {
-      --bg-color: #0f172a;
+      --bg-color: #000000;
       --text-color: #ffffff;
       --accent-color: #6366f1;
       --border-color: #64748b;
@@ -284,6 +285,7 @@
       </form>
       <div class="theme-toggle">
         <select id="themeSelect" class="theme-select">
+          <option value="main">main</option>
           <option value="soft-neutral">Soft Neutral</option>
           <option value="warm">Warm</option>
           <option value="calm">Calm</option>
@@ -294,8 +296,6 @@
           <option value="sunset-glow">Sunset Glow</option>
           <option value="mint-cream">Mint Cream</option>
           <option value="blush-rose">Blush Rose</option>
-          <option value="deep-ocean">Deep Ocean</option>
-          <option value="cyber-neon">Cyber Neon</option>
         </select>
         
         <div class="dark-toggle" id="darkToggle">
@@ -311,17 +311,19 @@
     const modeIcon = document.getElementById("modeIcon");
 
     const themes = {
-      "soft-neutral": ['#f5f7fa', '#1e293b', '#3b82f6', '#ccc'],
-      "warm": ['#ffedd5', '#7c2d12', '#ea580c', '#fbbf24'],
-      "calm": ['#f1f5f9', '#1e3a8a', '#0ea5e9', '#93c5fd'],
-      "earthy": ['#fefce8', '#365314', '#84cc16', '#d9f99d'],
-      "indigo": ['#c7d2fe', '#312e81', '#6366f1', '#a5b4fc'],
-      "sunset-glow": ['#fff1e6', '#5b21b6', '#f97316', '#f59e0b'],
-      "mint-cream": ['#e6fff7', '#1f2937', '#10b981', '#34d399'],
-      "blush-rose": ['#fdf2f8', '#1e1b4b', '#f472b6', '#e879f9'],
-      "deep-ocean": ['#0f172a', '#e0f2fe', '#0891b2', '#0ea5e9'],
-      "cyber-neon": ['#0d0c1d', '#f0f0f0', '#f43f5e', '#22d3ee'],
-    };
+        "soft-neutral": ['#f8fafc', '#0f172a', '#2563eb', '#d1d5db'],         // Clean, calm
+        "warm": ['#fff7ed', '#3b1d0c', '#d97706', '#fcd34d'],         // Cozy and inviting
+        "calm": ['#f1f5f9', '#1e293b', '#3b82f6', '#cbd5e1'],         // Balanced and relaxed
+        "earthy": ['#fafaf5', '#2e3a32', '#6b8e23', '#a3bfa6'],         // Natural and grounded
+        "indigo": ['#eef2ff', '#312e81', '#6366f1', '#a5b4fc'],         // Vibrant yet modern
+        "sunset-glow": ['#fff7f0', '#5a2b0f', '#f97316', '#fbbf24'],         // Warm glow with energy
+        "mint-cream": ['#ecfdf5', '#065f46', '#10b981', '#6ee7b7'],         // Fresh, vibrant contrast
+        "blush-rose": ['#fff1f2', '#4b1d45', '#db2777', '#f9a8d4'],         // Soft, romantic contrast
+        "deep-ocean": ['#0f172a', '#f1f5f9', '#38bdf8', '#64748b'],         // Cool, oceanic clarity
+        "cyber-neon": ['#111827', '#f9fafb', '#e11d48', '#06b6d4'],         // Futuristic contrast
+        "main": ['#f5f5f5', '#1e1e1e', '#ffd700', '#00443b']          // High clarity, gold-brand feel
+      };
+
 
     function applyTheme(name) {
       const [bg, text, accent, border] = themes[name] || themes["soft-neutral"];

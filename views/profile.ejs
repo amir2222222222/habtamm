@@ -121,69 +121,73 @@
 
     .update-btn {
   position: relative;
+  margin-top: 10px;
   z-index: 0;
   width: 100%;
-  padding: 12px;
-  margin-top: 15px;
+  font-size: 1.2rem;
   font-weight: bold;
-  font-size: 1rem;
   border: none;
-  border-radius: 8px;
-  color: var(--text-color);
-  cursor: pointer;
+  border-radius: 80px;
+  padding: 10px 20px;
   background: none;
-  transition: transform 0.2s ease, color 0.3s ease;
+  color: var(--accent-text-color);
+  text-align: center;
+  cursor: pointer;
   user-select: none;
   outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.3s ease;
 }
 
-/* Outer soft glow */
-.update-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.1);
-  z-index: -2;
-}
-
-/* Inner filled layer using bg-color */
+.update-btn::before,
 .update-btn::after {
   content: "";
   position: absolute;
-  inset: 4px;
-  border-radius: 6px;
-  background-color: var(--bg-color);
-  box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.681),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.619),
-    0 0 10px var(--border-color),
-    0 0 20px var(--border-color);
-  z-index: -1;
-  transition: all 100ms ease-out;
+  border-radius: 80px;
+  transition: all 0.25s ease;
+  pointer-events: none;
 }
 
-/* Hover effect */
-.update-btn:hover::after {
+.update-btn::before {
+  inset: 0;
+  background-color: var(--border-color);
+  z-index: -2;
+}
+
+.update-btn::after {
+  inset: 6px; /* Initial inner padding */
+  background-color: var(--accent-color);
+  z-index: -1;
+  transition: inset 0.25s ease, background-color 0.3s;
+}
+
+/* Hover effect – expands outward */
+.update-btn:hover:not(:disabled)::after {
   inset: 0;
   transition-timing-function: ease-in;
 }
 
-.update-btn:hover {
-  transform: scale(1.02);
+/* Optional: subtle glow on hover */
+.update-btn:hover:not(:disabled)::before {
+  box-shadow: 0 0 12px var(--accent-color);
 }
 
-/* Active press effect */
-.update-btn:active::after {
-  inset: 4px;
-  opacity: 0.9;
+/* On click (active) – color inversion + opacity */
+.update-btn:active:not(:disabled) {
+  color: var(--bg-color);
 }
 
+.update-btn:active:not(:disabled)::after {
+  opacity: 0.85;
+}
+
+/* Disabled style */
 .update-btn:disabled {
   cursor: default;
-  opacity: 0.5;
+  opacity: 0.4;
 }
-
 
     .success-message {
       color: var(--border-color);

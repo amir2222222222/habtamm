@@ -57,26 +57,39 @@ res.cookie("token", token, {
 }));
 
 router.get("/logout", (req, res) => {
-  // List of cookie names to be cleared
-  const cookieNames = [
-    "token",
-    "OpenToken",
-    "WinningAmount",
-    "BetBirr",
-    "LineChaker",
-    "TotalBet",
-    "RequiredBalanceToken",
-    "SelectedCarts"
-  ];
+  try {
+    const cookieOptions = {
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    };
 
-  // Clear each specified cookie
-  cookieNames.forEach(cookie => {
-    res.clearCookie(cookie);
-  });
+    const cookiesToClear = [
+      "token",
+      "OpenToken",
+      "WinningAmount",
+      "BetBirr",
+      "LineChaker",
+      "TotalBet",
+      "RequiredBalanceToken",
+      "SelectedCarts",
+      "VoiceType",
+      "GameSpeed",
+      "Patterns"
+    ];
 
-  // Redirect to login page
-  res.redirect("/login");
+    cookiesToClear.forEach(name => {
+      res.clearCookie(name, cookieOptions);
+    });
+
+    console.log("✅ Cookies cleared on logout:", cookiesToClear);
+    res.redirect("/login");
+  } catch (err) {
+    console.error("❌ Logout error:", err);
+    res.status(500).send("Server error during logout");
+  }
 });
+
 
 
 module.exports = router;

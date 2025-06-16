@@ -185,7 +185,7 @@
       display: grid;
       grid-template-rows: 6fr 1fr;
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 0px;
     }
 
     .bingo-grid {
@@ -198,6 +198,7 @@
       border: 2px solid #eee;
       border-radius: 10px;
       gap: 5px;
+      padding: 5px;
     }
 
     .bingo-labels {
@@ -210,43 +211,60 @@
       gap: 3px;
     }
 
-    .bingo-labels>div {
-      position: relative;
-      height: 100%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #ffffff;
-      background-color: #3c3c3c;
-      border: 2px solid #1f1f1f;
-      border-radius: 8px;
-      box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.4),
-        inset 2px 2px 6px rgba(255, 255, 255, 0.1);
-      text-shadow: 1px 1px 1px black;
-    }
+    .bingo-labels > div {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ffffff;
+  border: 2px solid #1f1f1f;
+  border-radius: 8px;
+  text-shadow: 1px 1px 1px black;
+}
 
-    .bingo-labels>div:nth-child(1) {
-      background-color: #c00000;
-    }
+/* B - Red */
+.bingo-labels > div:nth-child(1) {
+  background-color: #c00000;
+  box-shadow:
+    inset -4px -4px 10px rgba(80, 0, 0, 0.8),
+    inset 4px 4px 12px rgba(255, 100, 100, 0.3);
+}
 
-    .bingo-labels>div:nth-child(2) {
-      background-color: #f4a300;
-    }
+/* I - Orange */
+.bingo-labels > div:nth-child(2) {
+  background-color: #f4a300;
+  box-shadow:
+    inset -4px -4px 10px rgba(120, 70, 0, 0.8),
+    inset 4px 4px 12px rgba(255, 220, 100, 0.3);
+}
 
-    .bingo-labels>div:nth-child(3) {
-      background-color: #00b050;
-    }
+/* N - Green */
+.bingo-labels > div:nth-child(3) {
+  background-color: #00b050;
+  box-shadow:
+    inset -4px -4px 10px rgba(0, 80, 30, 0.8),
+    inset 4px 4px 12px rgba(150, 255, 180, 0.3);
+}
 
-    .bingo-labels>div:nth-child(4) {
-      background-color: #00b0f0;
-    }
+/* G - Blue */
+.bingo-labels > div:nth-child(4) {
+  background-color: #00b0f0;
+  box-shadow:
+    inset -4px -4px 10px rgba(0, 70, 110, 0.8),
+    inset 4px 4px 12px rgba(180, 240, 255, 0.3);
+}
 
-    .bingo-labels>div:nth-child(5) {
-      background-color: #7030a0;
-    }
+/* O - Purple */
+.bingo-labels > div:nth-child(5) {
+  background-color: #7030a0;
+  box-shadow:
+    inset -4px -4px 10px rgba(40, 0, 80, 0.8),
+    inset 4px 4px 12px rgba(210, 170, 255, 0.3);
+}
 
     .bingo-numbers {
       display: grid;
@@ -279,7 +297,8 @@
       gap: 10px;
       background-color: rgba(255, 255, 255, 0.9);
       border: 2px solid #eee;
-      border-radius: 5px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
       margin: 0 auto;
       /* Center the button group in its parent */
     }
@@ -372,26 +391,64 @@
     }
     .info-display {
   position: relative;
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 2px solid #eee;
-  border-radius: 10px;
-  padding: 1rem; /* Added padding for better spacing */
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center horizontally */
-  justify-content: center; /* Align to top vertically */
-  gap: 0.5rem; /* Space between child elements */
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.info-display::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 12px;
+  width: 40px;
+  height: 4px;
+  background-color: #4ade80; /* soft green highlight */
+  border-radius: 2px;
+}
+
+.info-display::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 12px;
+  width: 40px;
+  height: 4px;
+  background-color: #60a5fa; /* soft blue highlight */
+  border-radius: 2px;
 }
 
 .info-display .winner,
 .info-display .betbirr {
-  font-size:4rem;
-  color: #000000;
+  font-size: 3.5rem;
   font-weight: 900;
-  text-align: start;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  color: #1f2937; /* dark slate */
+  text-align: left;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
   line-height: 1.2;
+  letter-spacing: -1px;
+  margin: 0;
 }
+
+@media (max-width: 768px) {
+  .info-display {
+    padding: 1rem 1.25rem;
+  }
+
+  .info-display .winner,
+  .info-display .betbirr {
+    font-size: 2.5rem;
+  }
+}
+
 
   .logo-area {
       color: #ffd700;
@@ -439,16 +496,16 @@
 
     /* Cell highlights */
     .bingo-cell.current {
-      background-color: #ff0000;
+      background-color: #ff2424;
       color: #ffffff;
       font-weight: bold;
       animation: pulse 1s infinite;
-      box-shadow: inset 0 0 10px rgb(255, 255, 255);
+      box-shadow: inset 0 0 10px rgb(255, 230, 0);
     }
 
     .bingo-cell.highlight {
-      background-color: #ddff00;
-      color: black;
+      background-color: #eeff00;
+      color: rgb(0, 0, 0);
       box-shadow: inset 0 0 10px rgba(255, 0, 0, 1);
     }
 
@@ -660,7 +717,6 @@
       localStorage.setItem('BetBirr', '<%= betbirr %>');
       localStorage.setItem('LineChacker', '<%= linechaker %>');
       localStorage.setItem('TotalBet', '<%= totalbet %>');
-      localStorage.setItem('RequiredBalance', '<%= requiredbalance %>');
       localStorage.setItem('VoiceType', '<%= voicetype %>');
       localStorage.setItem('GameSpeed', '<%= gamespeed %>');
       localStorage.setItem('Patterns', '<%- JSON.stringify(patterns) %>');
@@ -686,7 +742,7 @@
 
             setTimeout(() => {
               promptEl.classList.remove('show');
-            }, 3000);
+            }, 500);
           }
 
           // IndexedDB open
@@ -853,305 +909,273 @@
         });
       }
 
-      function getVoiceBlob(db, number) {
-        return new Promise((resolve, reject) => {
-          const key = `${voiceType}_${number}`;
-          const tx = db.transaction("voices", "readonly");
-          const store = tx.objectStore("voices");
-          const request = store.get(key);
-          request.onsuccess = () => {
-            const result = request.result;
-            result?.blob ? resolve(result.blob) : reject(`Voice not found for ${key}`);
+        function getVoiceBlob(db, number) {
+          return new Promise((resolve, reject) => {
+            const key = `${voiceType}_${number}`;
+            const tx = db.transaction("voices", "readonly");
+            const store = tx.objectStore("voices");
+            const request = store.get(key);
+            request.onsuccess = () => {
+              const result = request.result;
+              result?.blob ? resolve(result.blob) : reject();
+            };
+            request.onerror = () => reject();
+          });
+        }
+
+        let gameStarted = false;
+        let hasStarted = false;
+        let isPaused = false;
+        let intervalActive = false;
+        let intervalId = null;
+        let shuffleUsed = false;
+        let index = 0;
+        let numbers = [];
+        let currentIndex = 0;
+
+        const calledNumbers = new Set();
+        let cachedNumbers = [];
+        const errorQueue = [];
+        let isShowingError = false;
+
+        function playVoiceFromBlob(blob, number) {
+          const audioURL = URL.createObjectURL(blob);
+          const audio = new Audio(audioURL);
+
+          audio.onplaying = () => {
+            const prefix = number <= 15 ? "B" :
+              number <= 30 ? "I" :
+                number <= 45 ? "N" :
+                  number <= 60 ? "G" : "O";
+            if (logoArea) logoArea.textContent = `${prefix} ${number}`;
           };
-          request.onerror = () => reject("Error fetching from IndexedDB");
+
+          audio.onended = () => URL.revokeObjectURL(audioURL);
+          audio.play().catch(() => { });
+        }
+
+        function highlightNumber(number) {
+          document.querySelectorAll(".bingo-cell.current").forEach(cell => {
+            cell.classList.remove("current");
+            cell.classList.add("highlight");
+          });
+
+          const currentCell = document.getElementById(number);
+          if (currentCell) currentCell.classList.add("current");
+
+          updateCalledUncalledCount();
+        }
+
+        function updateCalledUncalledCount() {
+          const called = document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current").length;
+          calledDisplay.textContent = called;
+        }
+
+        function setGameState(started, paused, active) {
+          hasStarted = started;
+          isPaused = paused;
+          gameStarted = started;
+          intervalActive = active;
+          updateButtons();
+        }
+
+        function updateButtons() {
+          startBtn.disabled = hasStarted && !isPaused;
+          pauseBtn.disabled = !hasStarted || isPaused;
+          resetBtn.disabled = !hasStarted || !isPaused;
+          cartSubmit.disabled = !hasStarted || !isPaused;
+          shuffleBtn.disabled = shuffleUsed || hasStarted;
+          lockBtn.disabled = !hasStarted || !isPaused || !cartInput.value.trim();
+
+          [startBtn, pauseBtn, resetBtn, cartSubmit, shuffleBtn, lockBtn].forEach(btn => {
+            btn.classList.toggle("disabled-anim", btn.disabled);
+          });
+        }
+
+        // Error handling
+        socket.on("errorMsg", (msg) => {
+          errorQueue.push(msg);
+          showNextError();
         });
-      }
 
-let gameStarted = false;
-let hasStarted = false;
-let isPaused = false;
-let intervalActive = false;
-let intervalId = null;
-let shuffleUsed = false;
-let index = 0;
-let numbers = [];
-let currentIndex = 0;
+        function showNextError() {
+          if (isShowingError || errorQueue.length === 0) return;
+          isShowingError = true;
+          const msg = errorQueue.shift();
+          alert(`⚠️ ${msg}`);
+          setTimeout(() => {
+            isShowingError = false;
+            showNextError();
+          }, 500);
+        }
 
-const calledNumbers = new Set();
-let cachedNumbers = [];
-const errorQueue = [];
-let isShowingError = false;
+        // Socket reconnect
+        socket.on("disconnect", () => {
+          gameStarted = false;
+        });
 
-function playVoiceFromBlob(blob, number) {
-  const audioURL = URL.createObjectURL(blob);
-  const audio = new Audio(audioURL);
+        socket.on("connect", () => {
+          setTimeout(() => {
+            if (!gameStarted && cachedNumbers.length > 0) {
+              numbers = cachedNumbers;
+              gameStarted = true;
+              startLoggingNumbers();
+            }
+          }, 1000);
+        });
 
-  audio.onplaying = () => {
-    const prefix = number <= 15 ? "B" :
-      number <= 30 ? "I" :
-        number <= 45 ? "N" :
-          number <= 60 ? "G" : "O";
-    if (logoArea) {
-      logoArea.textContent = `${prefix} ${number}`;
-    }
-    console.log(`🔊 Playing voice for number: ${prefix} ${number}`);
-  };
+        // Game logic
+        async function startLoggingNumbers(fromIndex = 0) {
+          if (!numbers || numbers.length === 0) {
+            if (cachedNumbers.length > 0) {
+              numbers = [...cachedNumbers];
+            } else {
+              return;
+            }
+          }
 
-  audio.onended = () => URL.revokeObjectURL(audioURL);
-  audio.play().catch(err => console.error("Audio error:", err));
-}
+          index = fromIndex;
+          clearInterval(intervalId);
+          isPaused = false;
+          setGameState(true, false, true);
 
-function highlightNumber(number) {
-  document.querySelectorAll(".bingo-cell.current").forEach(cell => {
-    cell.classList.remove("current");
-    cell.classList.add("highlight");
-  });
+          let db;
+          try {
+            db = await openDB();
+          } catch {
+            return;
+          }
 
-  const currentCell = document.getElementById(number);
-  if (currentCell) {
-    currentCell.classList.add("current");
-  }
+          while (index < numbers.length && calledNumbers.has(numbers[index])) {
+            index++;
+          }
 
-  updateCalledUncalledCount();
-}
+          if (index >= numbers.length) return;
 
-function updateCalledUncalledCount() {
-  const called = document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current").length;
-  calledDisplay.textContent = called;
-}
+          const playNextNumber = async () => {
+            while (index < numbers.length && calledNumbers.has(numbers[index])) {
+              index++;
+            }
 
-function setGameState(started, paused, active) {
-  hasStarted = started;
-  isPaused = paused;
-  gameStarted = started;
-  intervalActive = active;
-  updateButtons();
-}
+            if (isPaused || index >= numbers.length) {
+              clearInterval(intervalId);
+              setGameState(true, true, false);
+              gameStarted = false;
+              return;
+            }
 
-function updateButtons() {
-  startBtn.disabled = hasStarted && !isPaused;
-  pauseBtn.disabled = !hasStarted || isPaused;
-  resetBtn.disabled = !hasStarted || !isPaused;
-  cartSubmit.disabled = !hasStarted || !isPaused;
-  shuffleBtn.disabled = shuffleUsed || hasStarted;
-  lockBtn.disabled = !hasStarted || !isPaused || !cartInput.value.trim();
+            const number = numbers[index];
+            highlightNumber(number);
 
-  [startBtn, pauseBtn, resetBtn, cartSubmit, shuffleBtn, lockBtn].forEach(btn => {
-    btn.classList.toggle("disabled-anim", btn.disabled);
-  });
-}
+            try {
+              const blob = await getVoiceBlob(db, number);
+              playVoiceFromBlob(blob, number);
+            } catch { }
 
-// 🔁 Global error handling
-socket.on("errorMsg", (msg) => {
-  errorQueue.push(msg);
-  showNextError();
-});
+            calledNumbers.add(number);
+            index++;
+          };
 
-function showNextError() {
-  if (isShowingError || errorQueue.length === 0) return;
-  isShowingError = true;
-  const msg = errorQueue.shift();
-  alert(`⚠️ ${msg}`);
-  setTimeout(() => {
-    isShowingError = false;
-    showNextError();
-  }, 500);
-}
+          setTimeout(() => {
+            playNextNumber();
+            intervalId = setInterval(playNextNumber, gameSpeed * 1000);
+          }, 1000);
+        }
 
-// 🔌 Reconnect logic
-socket.on("disconnect", () => {
-  console.warn("🚫 Disconnected from server.");
-  gameStarted = false;
-});
+        // Start game
+        startBtn.addEventListener("click", () => {
+          if (!hasStarted || isPaused) {
+            cartSubmit.disabled = true;
+            lockBtn.disabled = true;
+            startBtn.disabled = true;
 
-socket.on("connect", () => {
-  console.log("🔁 Reconnected to server.");
-  setTimeout(() => {
-    if (!gameStarted && cachedNumbers.length > 0) {
-      console.log("♻️ Using cached numbers after reconnect:", cachedNumbers);
-      numbers = cachedNumbers;
-      gameStarted = true;
-      startLoggingNumbers();
-    }
-  }, 1000);
-});
+            if (cachedNumbers.length > 0) {
+              cartSubmit.disabled = false;
+              lockBtn.disabled = false;
+              lockBtn.classList.remove("disabled-anim");
+              cartInput.value = "";
+              initRecordGrid();
+              record_title.textContent = " የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ ";
+              numbers = [...cachedNumbers];
+              setGameState(true, false, true);
+              startLoggingNumbers();
+              return;
+            }
 
-// === LOGGING NUMBERS ===
-async function startLoggingNumbers(fromIndex = 0) {
-  if (!numbers || numbers.length === 0) {
-    if (cachedNumbers.length > 0) {
-      numbers = [...cachedNumbers];
-      console.log("🔁 Loaded cached numbers:", numbers);
-    } else {
-      console.error("❌ No numbers available to start the game.");
-      return;
-    }
-  }
+            const handleNumbers = (data) => {
+              if (!Array.isArray(data)) return;
+              playSound.play().catch(() => { });
+              socket.off("displayNumbers", handleNumbers);
+              socket.off("errorMsg", handleError);
 
-  index = fromIndex;
-  clearInterval(intervalId);
-  isPaused = false;
-  setGameState(true, false, true);
+              numbers = [...data];
+              cachedNumbers = [...data];
+              hasStarted = true;
+              gameStarted = true;
 
-  let db;
-  try {
-    db = await openDB();
-  } catch (err) {
-    console.error("IndexedDB open failed:", err);
-    return;
-  }
+              cartSubmit.disabled = false;
+              lockBtn.disabled = false;
+              lockBtn.classList.remove("disabled-anim");
+              cartInput.value = "";
+              initRecordGrid();
+              record_title.textContent = " የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ ";
 
-  // Skip already-called numbers
-  while (index < numbers.length && calledNumbers.has(numbers[index])) {
-    index++;
-  }
+              setGameState(true, false, true);
+              startLoggingNumbers();
+            };
 
-  if (index >= numbers.length) {
-    console.warn("All numbers already called.");
-    return;
-  }
+            const handleError = (msg) => {
+              socket.off("displayNumbers", handleNumbers);
+              socket.off("errorMsg", handleError);
+              alert(`⚠️ ${msg}`);
+              startBtn.disabled = false;
+            };
 
-  const playNextNumber = async () => {
-    while (index < numbers.length && calledNumbers.has(numbers[index])) {
-      index++;
-    }
+            socket.once("displayNumbers", handleNumbers);
+            socket.once("errorMsg", handleError);
+            socket.emit("sendNumbers");
+          }
+        });
 
-    if (isPaused || index >= numbers.length) {
-      clearInterval(intervalId);
-      setGameState(true, true, false);
-      gameStarted = false;
-      console.log("⏹️ Game paused or finished.");
-      return;
-    }
+        // Initial setup
+        initRecordGrid();
+        initBingoGrid();
+        updateCalledUncalledCount();
 
-    const number = numbers[index];
-    console.log(`🎯 Calling number: ${number}`);
-    highlightNumber(number);
+        cartSubmit.disabled = true;
+        lockBtn.disabled = true;
+        lockBtn.classList.add("disabled-anim");
+        cartSubmit.classList.add("disabled-anim");
+        pauseBtn.classList.add("disabled-anim");
+        resetBtn.classList.add("disabled-anim");
 
-    try {
-      const blob = await getVoiceBlob(db, number);
-      playVoiceFromBlob(blob, number);
-    } catch (err) {
-      console.error("Voice error:", err);
-    }
+        function handlePauseTrigger() {
+          if (hasStarted && !isPaused) {
+            pauseSound.play().catch(() => { });
+            setGameState(true, true, false);
+          }
+          cartInput.focus();
+        }
 
-    calledNumbers.add(number);
-    index++;
-  };
+        pauseBtn.addEventListener("click", handlePauseTrigger);
+        document.addEventListener("keydown", handlePauseTrigger);
+        document.addEventListener("mousedown", (e) => {
+          if (e.button === 0 || e.button === 2) handlePauseTrigger();
+        });
 
-  // Delay first number by 2 seconds
-  console.log("⏳ Waiting 2 seconds before calling the first number...");
-  setTimeout(() => {
-    playNextNumber();
-    intervalId = setInterval(playNextNumber, gameSpeed * 1000);
-  }, 1000);
-}
+        resetBtn.addEventListener("click", () => {
+          window.location.href = "/home";
+        });
 
-// 🎮 START BUTTON
-startBtn.addEventListener("click", () => {
-  if (!hasStarted || isPaused) {
-    cartSubmit.disabled = true;
-    lockBtn.disabled = true;
-    startBtn.disabled = true;
-
-    if (cachedNumbers.length > 0) {
-      console.log("✅ Starting game with cached numbers...");
-      cartSubmit.disabled = false;
-      lockBtn.disabled = false;
-      lockBtn.classList.remove("disabled-anim");
-      cartInput.value = "";
-      initRecordGrid();
-      record_title.textContent = " የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ ";
-      numbers = [...cachedNumbers];
-      setGameState(true, false, true);
-      startLoggingNumbers();
-      return;
-    }
-
-    console.log("📡 Requesting new numbers from server...");
-    const handleNumbers = (data) => {
-      if (!Array.isArray(data)) return;
-      playSound.play().catch(() => { });
-      socket.off("displayNumbers", handleNumbers);
-      socket.off("errorMsg", handleError);
-
-      numbers = [...data];
-      cachedNumbers = [...data];
-      hasStarted = true;
-      gameStarted = true;
-
-      cartSubmit.disabled = false;
-      lockBtn.disabled = false;
-      lockBtn.classList.remove("disabled-anim");
-      cartInput.value = "";
-      initRecordGrid();
-      record_title.textContent = " የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ ";
-
-      console.log("✅ Received numbers from server:", numbers);
-      setGameState(true, false, true);
-      startLoggingNumbers();
-    };
-
-    const handleError = (msg) => {
-      socket.off("displayNumbers", handleNumbers);
-      socket.off("errorMsg", handleError);
-      alert(`⚠️ ${msg}`);
-      startBtn.disabled = false;
-    };
-
-    socket.once("displayNumbers", handleNumbers);
-    socket.once("errorMsg", handleError);
-    socket.emit("sendNumbers");
-  }
-});
-
-// INIT UI
-initRecordGrid();
-initBingoGrid();
-updateCalledUncalledCount();
-
-cartSubmit.disabled = true;
-lockBtn.disabled = true;
-lockBtn.classList.add("disabled-anim");
-cartSubmit.classList.add("disabled-anim");
-pauseBtn.classList.add("disabled-anim");
-resetBtn.classList.add("disabled-anim");
-
-function handlePauseTrigger() {
-  if (hasStarted && !isPaused) {
-    pauseSound.play().catch(() => { });
-    console.log("⏸️ Game paused by user input.");
-    setGameState(true, true, false);
-  }
-  cartInput.focus();
-}
-
-// Pause triggers
-pauseBtn.addEventListener("click", handlePauseTrigger);
-document.addEventListener("keydown", handlePauseTrigger);
-document.addEventListener("mousedown", (e) => {
-  if (e.button === 0 || e.button === 2) {
-    handlePauseTrigger();
-  }
-});
-
-// Reset
-resetBtn.addEventListener("click", () => {
-  console.log("🔄 Resetting game.");
-  window.location.href = "/home";
-});
-
-// Shuffle
-shuffleBtn.addEventListener("click", () => {
-  if (!shuffleUsed && !hasStarted) {
-    shuffleSound.play();
-    shuffleUsed = true;
-    document.body.classList.add("shake");
-    setTimeout(() => document.body.classList.remove("shake"), 1000);
-    updateButtons();
-    console.log("🔀 Shuffle used.");
-  }
-});
+        shuffleBtn.addEventListener("click", () => {
+          if (!shuffleUsed && !hasStarted) {
+            shuffleSound.play();
+            shuffleUsed = true;
+            document.body.classList.add("shake");
+            setTimeout(() => document.body.classList.remove("shake"), 1000);
+            updateButtons();
+          }
+        });
 
 
       let lockedCartelas = [];
