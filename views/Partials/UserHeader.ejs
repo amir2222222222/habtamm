@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    (function () {
+  var themes = {
+        "sunset-blaze": ['#fae3e3', '#3a3e3f', '#d54b87', '#d07fa6', '#c46a44', '#fbe4e4', '#e76e6e', '#42a69c', '#e2aa58', '#b4473a', '#3d8edb', '#f6d6d8', '#747b7e', '#e6a190', '#db7ca6'],
+    "forest-emerald": ['#e3f0db', '#2f5c38', '#66a062', '#94b98a', '#6a8e4e', '#dceddb', '#aac99c', '#da9545', '#e3b04d', '#b53a3a', '#4693c2', '#d6e7d4', '#55686c', '#8f9a90', '#80b263'],
+    "royal-amethyst": ['#e7ddef', '#5b2a84', '#8e3eaa', '#a46fbf', '#6c3f91', '#ded2e7', '#a695bf', '#5a8a62', '#e2c53c', '#bd4b70', '#46a8b7', '#cdbde2', '#7354a0', '#9e89c1', '#ac94dc'],
+    "golden-sand": ['#fff4d2', '#6c5241', '#e1aa32', '#e9c768', '#c5872d', '#fff0c2', '#f5d996', '#5d8e54', '#d56c2f', '#b8473d', '#4391c5', '#f8dca6', '#9c7e6b', '#c7b6a7', '#f5c53f'],
+    "ocean-breeze": ['#d6eff9', '#2a5d87', '#48b4c1', '#72cad0', '#3d8ca8', '#d1f0f2', '#85c9cc', '#5b9b5b', '#e0a735', '#b34c7a', '#3b8ac4', '#acddef', '#43929e', '#a8dcdf', '#3ca4b4'],
+    "crimson-dusk": ['#f9d4d8', '#922e2e', '#cb4e4e', '#e09797', '#af3b3b', '#f6c2c2', '#ce7373', '#5c9f5c', '#cf8d3d', '#993d5c', '#3971ab', '#f7c1b0', '#7e5c4b', '#d06060', '#e16262'],
+    "mint-fresh": ['#ddedda', '#32683b', '#63a063', '#97c197', '#3e7a44', '#e1f0e0', '#a2c6a2', '#db8a37', '#e1ad42', '#b33d3d', '#4aa3b3', '#c8dec8', '#576b6e', '#949b94', '#74b15c'],
+    "coffee-classic": ['#f1f1f1', '#4b342e', '#836557', '#b29e92', '#6f5244', '#ebe0dc', '#c9b4a9', '#639c5e', '#d28a34', '#bc4e41', '#3d8ac3', '#cbb3a7', '#947565', '#a9988a', '#b99c8c'],
+    "lavender-dream": ['#e8d7ef', '#5a3c82', '#9548a3', '#b87fcb', '#7a5095', '#ded2ea', '#a99abf', '#5ca464', '#ddcb41', '#bf5184', '#4fb7c3', '#d2b9e5', '#6f51a3', '#a58cc8', '#ae94dd'],
+    "slate-gray": ['#f1f1f1', '#2d2d2d', '#708c9c', '#9baeb8', '#526270', '#e5e7e9', '#c3d1d4', '#5b9760', '#dd9142', '#c04a42', '#3c8dc4', '#d6d6d6', '#808080', '#b2b2b2', '#7c949e'],
+    "tropical-forest": ['#d7e9d4', '#2f6e3a', '#65a365', '#94be94', '#467e4a', '#ddeedc', '#a6cfa6', '#dc9036', '#e0b142', '#b53e3e', '#4ba6b3', '#cce1cc', '#556766', '#959a95', '#76b162'],
+      };
+
+
+      var name = localStorage.getItem('theme');
+      if (name && themes[name]) {
+        var colors = themes[name];
+        var doc = document.documentElement.style;
+        doc.setProperty('--bg-color', colors[0]);
+        doc.setProperty('--text-color', colors[1]);
+        doc.setProperty('--primary-color', colors[2]);
+        doc.setProperty('--secondary-color', colors[3]);
+        doc.setProperty('--button-color', colors[4]);
+        doc.setProperty('--card-color', colors[5]);
+        doc.setProperty('--border-color', colors[6]);
+        doc.setProperty('--success-color', colors[7]);
+        doc.setProperty('--warning-color', colors[8]);
+        doc.setProperty('--danger-color', colors[9]);
+        doc.setProperty('--info-color', colors[10]);
+        doc.setProperty('--input-bg', colors[11]);
+        doc.setProperty('--input-text', colors[12]);
+        doc.setProperty('--disabled-color', colors[13]);
+        doc.setProperty('--highlight-color', colors[14]);
+      }
+
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Header</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #f5f7fa;
+      --text-color: #1e293b;
+      --primary-color: #3b82f6;
+      --secondary-color: #2563eb;
+      --button-color: #3b82f6;
+      --card-color: #ffffff;
+      --border-color: #e2e8f0;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --info-color: #0ea5e9;
+      --input-bg: #ffffff;
+      --input-text: #1e293b;
+      --disabled-color: #94a3b8;
+      --highlight-color: #e2e8f0;
+    }
+
+    .dark-mode {
+      --bg-color: #0f172a;
+      --text-color: #f8fafc;
+      --primary-color: #6366f1;
+      --secondary-color: #818cf8;
+      --button-color: #6366f1;
+      --card-color: #1e293b;
+      --border-color: #334155;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --info-color: #0ea5e9;
+      --input-bg: #1e293b;
+      --input-text: #e2e8f0;
+      --disabled-color: #64748b;
+      --highlight-color: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+    header {
+      display: flex;
+      flex-direction: row;
+      align-items: end;
+      justify-content: space-between;
+      background-color: var(--card-color);
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      padding-top: 10px;
+      color: var(--primary-color);
+      transition: color 0.3s ease;
+        margin-left: 20px;
+  
+    }
+
+    .brand span:last-child {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .nav {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      justify-content: space-between;
+    }
+
+    nav.nav a {
+      font-size: 17px;
+      text-decoration: none;
+      color: var(--text-color);
+      padding-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    nav.nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+
+    nav.nav a:hover,
+    nav.nav a.active {
+      color: var(--primary-color);
+    }
+
+    nav.nav a:hover::after,
+    nav.nav a.active::after {
+      width: 100%;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .balance-text {
+      font-weight: 600;
+      color: var(--text-color);
+      padding: 6px 14px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      background-color: var(--card-color);
+    }
+
+    .balance-text:hover {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .logout-button {
+      background-color: var(--danger-color);
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .logout-button i {
+      margin-right: 6px;
+    }
+
+    .logout-button:hover {
+      background-color: var(--text-color);
+      box-shadow: inset 0 0 0 2px var(--danger-color);
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+.theme-select {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: var(--highlight-color);
+   color: white;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--primary-color);
+}
+
+.theme-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.theme-select:hover {
+    border-color: var(--border-color);
+}
+
+    .dark-toggle {
+      width: 36px;
+      height: 36px;
+      margin-right: 20px;
+      border-radius: 50%;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dark-toggle i {
+      font-size: 16px;
+      color: var(--text-color);
+    }
+
+    .dark-mode .dark-toggle i {
+      color: var(--warning-color);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <i class="fas fa-dice"></i><span>Habtam</span><span>Bingo</span>
+    </div>
+
+    <nav class="nav">
+      <a href="/home"><i class="fas fa-home"></i>Home</a>
+      <a href="/profile"><i class="fas fa-user"></i>Profile</a>
+      <a href="/status"><i class="fas fa-signal"></i>Status</a>
+      <a href="/games"><i class="fas fa-gamepad"></i>Games</a>
+      <a href="/setting"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+
+    <div class="actions">
+      <div class="theme-toggle">
+      <select id="themeSelect" class="theme-select">
+        <option value="sunset-blaze">Sunset Blaze</option>
+        <option value="forest-emerald">Forest Emerald</option>
+        <option value="royal-amethyst">Royal Amethyst</option>
+        <option value="golden-sand">Golden Sand</option>
+        <option value="ocean-breeze">Ocean Breeze</option>
+        <option value="crimson-dusk">Crimson Dusk</option>
+        <option value="mint-fresh">Mint Fresh</option>
+        <option value="coffee-classic">Coffee Classic</option>
+        <option value="lavender-dream">Lavender Dream</option>
+        <option value="slate-gray">Slate Gray</option>
+        <option value="tropical-forest">Tropical Forest</option>
+      </select>
+
+
+        <div class="balance-text" onclick="toggleBalance()">
+          <i class="fas fa-wallet"></i>
+        </div>
+
+        <form action="/logout" method="POST">
+          <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i>Log Out</button>
+        </form>
+
+        <div class="dark-toggle" id="darkToggle">
+          <i class="fas fa-sun" id="modeIcon"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+  <script>
+    const themeSelect = document.getElementById("themeSelect");
+    const darkToggle = document.getElementById("darkToggle");
+    const modeIcon = document.getElementById("modeIcon");
+
+   const themes = {
+      "sunset-blaze": ['#fae3e3', '#3a3e3f', '#d54b87', '#d07fa6', '#c46a44', '#fbe4e4', '#e76e6e', '#42a69c', '#e2aa58', '#b4473a', '#3d8edb', '#f6d6d8', '#747b7e', '#e6a190', '#db7ca6'],
+     "forest-emerald": ['#e3f0db', '#2f5c38', '#66a062', '#94b98a', '#6a8e4e', '#dceddb', '#aac99c', '#da9545', '#e3b04d', '#b53a3a', '#4693c2', '#d6e7d4', '#55686c', '#8f9a90', '#80b263'],
+     "royal-amethyst": ['#e7ddef', '#5b2a84', '#8e3eaa', '#a46fbf', '#6c3f91', '#ded2e7', '#a695bf', '#5a8a62', '#e2c53c', '#bd4b70', '#46a8b7', '#cdbde2', '#7354a0', '#9e89c1', '#ac94dc'],
+     "golden-sand": ['#fff4d2', '#6c5241', '#e1aa32', '#e9c768', '#c5872d', '#fff0c2', '#f5d996', '#5d8e54', '#d56c2f', '#b8473d', '#4391c5', '#f8dca6', '#9c7e6b', '#c7b6a7', '#f5c53f'],
+     "ocean-breeze": ['#d6eff9', '#2a5d87', '#48b4c1', '#72cad0', '#3d8ca8', '#d1f0f2', '#85c9cc', '#5b9b5b', '#e0a735', '#b34c7a', '#3b8ac4', '#acddef', '#43929e', '#a8dcdf', '#3ca4b4'],
+     "crimson-dusk": ['#f9d4d8', '#922e2e', '#cb4e4e', '#e09797', '#af3b3b', '#f6c2c2', '#ce7373', '#5c9f5c', '#cf8d3d', '#993d5c', '#3971ab', '#f7c1b0', '#7e5c4b', '#d06060', '#e16262'],
+     "mint-fresh": ['#ddedda', '#32683b', '#63a063', '#97c197', '#3e7a44', '#e1f0e0', '#a2c6a2', '#db8a37', '#e1ad42', '#b33d3d', '#4aa3b3', '#c8dec8', '#576b6e', '#949b94', '#74b15c'],
+     "coffee-classic": ['#f1f1f1', '#4b342e', '#836557', '#b29e92', '#6f5244', '#ebe0dc', '#c9b4a9', '#639c5e', '#d28a34', '#bc4e41', '#3d8ac3', '#cbb3a7', '#947565', '#a9988a', '#b99c8c'],
+     "lavender-dream": ['#e8d7ef', '#5a3c82', '#9548a3', '#b87fcb', '#7a5095', '#ded2ea', '#a99abf', '#5ca464', '#ddcb41', '#bf5184', '#4fb7c3', '#d2b9e5', '#6f51a3', '#a58cc8', '#ae94dd'],
+     "slate-gray": ['#f1f1f1', '#2d2d2d', '#708c9c', '#9baeb8', '#526270', '#e5e7e9', '#c3d1d4', '#5b9760', '#dd9142', '#c04a42', '#3c8dc4', '#d6d6d6', '#808080', '#b2b2b2', '#7c949e'],
+     "tropical-forest": ['#d7e9d4', '#2f6e3a', '#65a365', '#94be94', '#467e4a', '#ddeedc', '#a6cfa6', '#dc9036', '#e0b142', '#b53e3e', '#4ba6b3', '#cce1cc', '#556766', '#959a95', '#76b162'],
+    };
+
+
+    function applyTheme(name) {
+      const colors = themes[name] || themes["midnight-sapphire"];
+      const doc = document.documentElement.style;
+      doc.setProperty('--bg-color', colors[0]);
+      doc.setProperty('--text-color', colors[1]);
+      doc.setProperty('--primary-color', colors[2]);
+      doc.setProperty('--secondary-color', colors[3]);
+      doc.setProperty('--button-color', colors[4]);
+      doc.setProperty('--card-color', colors[5]);
+      doc.setProperty('--border-color', colors[6]);
+      doc.setProperty('--success-color', colors[7]);
+      doc.setProperty('--warning-color', colors[8]);
+      doc.setProperty('--danger-color', colors[9]);
+      doc.setProperty('--info-color', colors[10]);
+      doc.setProperty('--input-bg', colors[11]);
+      doc.setProperty('--input-text', colors[12]);
+      doc.setProperty('--disabled-color', colors[13]);
+      doc.setProperty('--highlight-color', colors[14]);
+      localStorage.setItem("theme", name);
+    }
+
+    if (themeSelect) {
+      themeSelect.addEventListener("change", (e) => {
+        applyTheme(e.target.value);
+      });
+    }
+
+    if (darkToggle && modeIcon) {
+      darkToggle.addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark-mode");
+        localStorage.setItem("dark-mode", isDark);
+        modeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
+      });
+    }
+
+    let balanceVisible = false;
+
+    async function toggleBalance() {
+      const balanceText = document.querySelector(".balance-text");
+      if (balanceVisible) {
+        balanceText.innerHTML = '<i class="fas fa-wallet"></i>';
+        balanceVisible = false;
+        return;
+      }
+      try {
+        const response = await fetch("/balance");
+        const data = await response.json();
+        balanceText.innerHTML = data.balance ? `<i class="fas fa-wallet"></i> ${data.balance.toLocaleString()}$` : '<i class="fas fa-wallet"></i> 0$';
+      } catch {
+        balanceText.innerHTML = '<i class="fas fa-wallet"></i> Error';
+      }
+      balanceVisible = true;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Highlight active nav link
+      const path = window.location.pathname;
+      document.querySelectorAll("nav.nav a").forEach(link => {
+        if (link.getAttribute("href") === path) {
+          link.classList.add("active");
+        }
+      });
+
+      // Restore theme and dark mode
+      const savedTheme = localStorage.getItem("theme") || "midnight-sapphire";
+      const isDarkMode = localStorage.getItem("dark-mode") === "true";
+
+      applyTheme(savedTheme);
+      if (themeSelect) themeSelect.value = savedTheme;
+
+      if (isDarkMode) {
+        document.body.classList.add("dark-mode");
+        if (modeIcon) modeIcon.className = "fas fa-moon";
+      }
+    });
+  </script>
+</body>
+
+</html>

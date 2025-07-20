@@ -1,69 +1,85 @@
 const mongoose = require("mongoose");
 
-// Helper: Today's date in YYYY-MM-DD
-function getTodayDate() {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
+const GameSchema = new mongoose.Schema({
+  gameStart: { type: Date, default: null, immutable: true },
+  gameEnd: { type: Date, default: null },
+  betBirr: { type: Number, immutable: true },
+  pickedCards: { type: [String], immutable: true },
+  onCalls: [String],
+  winnerCards: [String],
+  luckypassedCards: [String],
+  dersh: { type: Number, immutable: true },
+  commission: { type: Number, immutable: true },
+  by: { type: String, immutable: true },
+  time: { type: String, immutable: true },
+  shopname: { type: String, immutable: true },
+  index: { type: String},
+}, { _id: false });
 
-// User Schema
 const UserSchema = new mongoose.Schema({
+  uuid: { type: String,  unique: true },  // Added uuid here
   name: { type: String, trim: true },
   shopname: { type: String, trim: true },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
+  username: { type: String, required: true, trim: true, unique: true },
   password: { type: String, required: true },
   credit: { type: Number, default: 0 },
-  shouldAddCredit: { type: Boolean, default: false },
   balance: { type: Number, default: 0 },
-  lastCreditTime: { type: String },
-  user_commission: { type: Number, min: 1, max: 100, default: 20 },
-  owner_commission: { type: Number, min: 1, max: 100, default: 15 },
-  role: { type: String, enum: ['admin', 'user', 'shop'], default: 'user' },
-  games: [ /* your GameSchema here */ ],
+  initial_balance: { type: Number, default: 0 },
+  lastCreditTime: { type: Date, default: Date.now },
+  user_commission: { type: Number, default: 20 },
+  owner_commission: { type: Number, default: 20 },
+  role: { type: String, default: 'user' },
+  createdAt: { type: Date, default: Date.now },
+  createdBy: { type: String },
+  state: { 
+    type: String, 
+    enum: ['active', 'suspended'],
+    default: 'active'
+  },
+  games: [GameSchema]
 });
 
-// Pre-save logic to apply credit only if flagged OR on new docs
-UserSchema.pre("save", async function (next) {
-  // 1) default shopname
-  if (!this.shopname) {
-    this.shopname = this.name;
-  }
-
-  const today = getTodayDate();
-
-  // 2) NEW DOCUMENT: initialize balance = credit
-  if (this.isNew) {
-    if (this.credit > 0) {
-      this.balance = this.credit;
-      this.lastCreditTime = today;
-    }
-    // ensure flag is reset
-    this.shouldAddCredit = false;
-
-  // 3) EXISTING DOC + explicit flag
-  } else if (this.shouldAddCredit) {
-    const existing = await mongoose.models.User.findById(this._id);
-    if (existing) {
-      if (this.credit > 0) {
-        this.balance = (existing.balance || 0) + this.credit;
-      } else {
-        this.balance = existing.balance || 0;
-      }
-      this.lastCreditTime = today;
-    }
-    this.shouldAddCredit = false;
-  }
-
-  next();
+const AdminSchema = new mongoose.Schema({
+  uuid: { type: String,unique: true },  // Added uuid here
+  name: { type: String, trim: true },
+  username: { type: String, required: true, trim: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, default: 'admin' },
+  createdAt: { type: Date, default: Date.now },
+  createdBy: { type: String },
+  state: { 
+    type: String, 
+    enum: ['active', 'suspended'],
+    default: 'active'
+  },
 });
 
-module.exports = mongoose.model("User", UserSchema);
+const SubAdminSchema = new mongoose.Schema({
+  uuid: { type: String, unique: true },
+  name: { type: String, trim: true },
+  username: { type: String, required: true, trim: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, default: 'subadmin' },
+  credit: { type: Number, default: 0 },
+  lastCreditTime: { type: Date, default: Date.now },
+  balance: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  createdBy: { type: String },
+ state: { 
+    type: String, 
+    enum: ['active', 'suspended'],
+    default: 'active'
+  },
+  account_history: [{
+    amount: Number,
+    deposited_user_userName: String,
+    date: { type: Date, default: Date.now }
+  }]
+});
+
+// Create models
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const Admin = mongoose.models.Admin || mongoose.model("Admin", AdminSchema);
+const SubAdmin = mongoose.models.SubAdmin || mongoose.model("SubAdmin", SubAdminSchema);
+
+module.exports = { User, Admin, SubAdmin };

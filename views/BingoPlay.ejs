@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <title>Bingo Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: rgb(1, 60, 52);
+      display: grid;
+      grid-template-columns: 2fr 10fr;
+      grid-template-rows: 1fr;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .sidebar {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: grid;
+      grid-template-rows: 1fr 3fr;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+
+    .sidebar-logo {
+      position: relative;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 10px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .sidebar-logo-img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-image: url('Logo.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .sidebar-records {
+      position: relative;
+      display: grid;
+      grid-template-rows: 1fr 3fr 1fr;
+      grid-template-columns: 1fr;
+      gap: 5px;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    .record-title {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background-color: rgb(1, 60, 52);
+      text-align: center;
+      word-break: break-word;
+      border-radius: 3px;
+      font-size: 1.1rem;
+      padding: 8px;
+      font-weight: 600;
+      height: 100%;
+      width: 100%;
+    }
+
+    .record-table-container {
+      position: relative;
+      border: 5px solid rgb(1, 60, 52);
+      display: grid;
+      grid-template-rows: 1fr 5fr;
+      grid-template-columns: 1fr;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    .table-header {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: 1fr;
+      background-color: rgb(1, 60, 52);
+      height: 100%;
+      width: 100%;
+    }
+
+    .table-header div {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #ffffff;
+      font-weight: 600;
+      padding: 5px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .record-grid {
+      position: relative;
+      display: grid;
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(5, 1fr);
+      background-color: #111;
+      border: 1px solid rgb(1, 60, 52);
+      height: 100%;
+      width: 100%;
+    }
+
+    .record-cell {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+      background-color: #f8f8f8;
+      border: 2px solid rgb(1, 60, 52);
+      border-radius: 3px;
+    }
+
+    .input-checker {
+      position: relative;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .input-checker input {
+      position: relative;
+      border: 2px solid rgb(1, 60, 52);
+      font-size: 2rem;
+      height: 50px;
+      width: 100%;
+      text-align: center;
+      border-radius: 5px;
+      background: #fff;
+    }
+
+    .input-checker button {
+      position: relative;
+      height: 40px;
+      width: 80%;
+      border-radius: 5px;
+      background: rgb(1, 60, 52);
+      border: none;
+      color: #ffeb3b;
+      font-family: 'Gill Sans', sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* Main Panel */
+    .main-panel {
+      position: relative;
+      display: grid;
+      grid-template-rows: 5fr 2fr;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Top Board */
+    .top-board {
+      position: relative;
+      display: grid;
+      grid-template-rows: 6fr 1fr;
+      grid-template-columns: 1fr;
+      gap: 0px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .bingo-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 16fr;
+      grid-template-rows: 1fr;
+      justify-content: center;
+      background: white;
+      border-radius: 10px;
+      gap: 5px;
+      padding: 5px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .bingo-labels {
+      position: relative;
+      display: grid;
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: 1fr;
+      font-family: 'Arial Black', 'Impact', sans-serif;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .bingo-labels>div {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #ffffff;
+      border-radius: 8px;
+      border: 3px solid black;
+    }
+
+    /* B - Red */
+    .bingo-labels>div:nth-child(1) {
+      background: #c00000;
+    }
+
+    /* I - Orange */
+    .bingo-labels>div:nth-child(2) {
+      background: #f4a300;
+    }
+
+    /* N - Green */
+    .bingo-labels>div:nth-child(3) {
+      background: #00b050;
+    }
+
+    /* G - Blue */
+    .bingo-labels>div:nth-child(4) {
+      background: #00b0f0;
+    }
+
+    /* O - Purple */
+    .bingo-labels>div:nth-child(5) {
+      background: #7030a0;
+    }
+
+    .bingo-numbers {
+      position: relative;
+      display: grid;
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(15, 1fr);
+      gap: 3px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .bingo-cell {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Button Group */
+    .button-group {
+      position: relative;
+      display: flex;
+      padding: 8px;
+      width: 70%;
+      justify-content: space-around;
+      gap: 10px;
+      background: white;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      margin: 0 auto;
+      height: 100%;
+      width: 80%;
+    }
+
+    .game-btn {
+      position: relative;
+      flex: 1;
+      font: bold 1.3rem 'Comic Sans MS', 'Cooper Black', sans-serif;
+      color: white;
+      cursor: pointer;
+      border: 3px solid rgb(0, 0, 0);
+      border-radius: 5px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .game-btn:hover {
+      background-color: #2980b9;
+      transform: scale(1.02);
+    }
+
+    /* SHUFFLE */
+    .shuffle {
+      background-color: #1b005f;
+    }
+
+    /* START */
+    .start {
+      background-color: #05652f;
+    }
+
+    /* PAUSE */
+    .pause {
+      background-color: #0090ea;
+    }
+
+    /* RESET */
+    .reset {
+      background-color: #4200ea;
+    }
+
+    /* Bottom Display Fix */
+    .bottom-display {
+      position: relative;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 1fr;
+      gap: 10px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .info-display {
+      position: relative;
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      height: 100%;
+      width: 100%;
+    }
+
+    .info-display {
+      --winner-glow: #f1c40f;
+      --betbirr-glow: #2ecc71;
+      --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-display .winner,
+    .info-display .betbirr {
+      position: relative;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #2c3e50;
+      text-align: center;
+      line-height: 1.2;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 100%;
+      width: 100%;
+      text-shadow: var(--text-shadow);
+      transition: all 0.3s ease;
+    }
+
+    /* Winner: Trophy with shine effect */
+    .info-display .winner {
+      color: #e67e22;
+      background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      animation: pulse-gold 2s infinite;
+    }
+
+    .info-display .winner::before {
+      content: "🏆";
+      font-size: 3rem;
+      margin-right: 10px;
+      filter: drop-shadow(0 0 8px var(--winner-glow));
+      animation: bounce 1.5s infinite;
+    }
+
+    /* BetBirr: Money with currency glow */
+    .info-display .betbirr {
+      color: #27ae60;
+      background: linear-gradient(135deg, #f8fff8, #e8f5e9);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      animation: pulse-green 2s infinite;
+    }
+
+    .info-display .betbirr::before {
+      content: "💰";
+      /* Changed to money bag for better visual */
+      font-size: 2.8rem;
+      margin-right: 6px;
+      filter: drop-shadow(0 0 6px var(--betbirr-glow));
+      animation: spin 3s infinite linear;
+    }
+ 
+    .info-display .betbirr::after {
+      content: "ብር";
+      font-size: 2rem;
+      margin-left: 6px;
+      color: #16a085;
+      font-weight: 600;
+      text-shadow: none;
+    }
+         .info-display .winner::after {
+      content: "ብር";
+      font-size: 2rem;
+      margin-left: 6px;
+       color: #e67e22;
+      text-shadow: none;
+    }
+
+    /* Animations */
+    @keyframes pulse-gold {
+      0% {
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 15px rgba(241, 196, 15, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+      }
+    }
+
+    @keyframes pulse-green {
+      0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 15px rgba(46, 204, 113, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotateY(0);
+      }
+
+      100% {
+        transform: rotateY(360deg);
+      }
+    }
+
+    .logo-area {
+      position: relative;
+      color: #947e00;
+      background-color: rgb(255, 255, 255);
+      border: 1px solid #445566;
+      font-size: 8rem;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 10px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    .called-numbers {
+      position: relative;
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      display: flex;
+
+      flex-direction: column;
+      padding: 10px;
+      height: 100%;
+      width: 100%;
+      font-family: 'Courier New', Courier, monospace;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .callednumbers {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 8rem;
+      color: #947e00;
+      font-weight: bold;
+      background: #ffffff;
+      border-radius: 10px;
+      min-width: 120px;
+      border: 2px solid #e0e0e0;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+      letter-spacing: 2px;
+    }
+
+    /* Label underneath or above the number */
+    .called-numbers .small {
+      position: relative;
+      font-size: 1.8rem;
+      color: #000000;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .bingo-cell.highlight {
+      background-color: rgb(255, 0, 0);
+      color: #ffffff;
+      border: 3px solid black;
+      z-index: 1;
+    }
+
+    .bingo-cell.current {
+      background-color: yellow;
+      color: #000000;
+      border: 2px solid black;
+      animation: pulse 1s infinite;
+      z-index: 1000;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .win-pattern {
+      background: #2ecc71 !important;
+      color: white;
+      font-weight: bold;
+    }
+
+    button.disabled-anim {
+      opacity: 0.2;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .record-cell.checked {
+      background: #362ecc;
+      color: white;
+    }
+
+    .record-cell.joker {
+      background: #ffd700;
+      color: #000;
+    }
+
+    .record-cell.line-win {
+      background: rgba(0, 0, 0, 0.604);
+      color: #ffffff;
+    }
+
+    #prompt-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 300px;
+      max-width: 80vw;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background-color: #2c3e50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 10000;
+      text-align: center;
+    }
+
+    #prompt-message.show {
+      opacity: 1;
+    }
+
+    #prompt-message.success {
+      background: #2ecc71;
+    }
+
+    #prompt-message.error {
+      background: #e74c3c;
+    }
+
+    #voice-download-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(20, 20, 20, 0.9);
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      font-weight: 600;
+      z-index: 9999;
+      user-select: none;
+    }
+
+    #voice-download-overlay .loading-box {
+      background: #2c3e50;
+      padding: 30px 50px;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+
+      .info-display .winner,
+      .info-display .betbirr {
+        font-size: 2.8rem;
+      }
+
+      .callednumbers {
+        font-size: 5rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      body {
+        grid-template-columns: 3fr 9fr;
+      }
+
+      .bingo-cell {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-img"></div>
+    </div>
+    <div class="sidebar-records">
+      <div class="record-title"></div>
+      <div class="record-table-container">
+        <div class="table-header">
+          <div>B</div>
+          <div>I</div>
+          <div>N</div>
+          <div>G</div>
+          <div>O</div>
+        </div>
+        <div class="record-grid"></div>
+      </div>
+      <div class="input-checker">
+        <input type="text" class="cart-input" />
+        <button class="cart-submite">Check</button>
+        <button id="lock" class="lock">lock</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-panel">
+    <div class="top-board">
+      <div class="bingo-grid">
+        <div class="bingo-labels">
+          <div>B</div>
+          <div>I</div>
+          <div>N</div>
+          <div>G</div>
+          <div>O</div>
+        </div>
+        <div class="bingo-numbers"></div>
+      </div>
+
+      <div class="button-group">
+        <button id="shuffle" class="game-btn shuffle">
+          <i class="fas fa-random"></i>&nbsp;Shuffle
+        </button>
+
+        <button id="start" class="game-btn start">
+          <i class="fas fa-play"></i>&nbsp;Start
+        </button>
+
+        <button id="pause" class="game-btn pause">
+          <i class="fas fa-pause"></i>&nbsp;Pause
+        </button>
+
+        <button id="reset" class="game-btn reset">
+          <i class="fas fa-rotate-right"></i>&nbsp;Reset
+        </button>
+      </div>
+
+
+    </div>
+    <div class="bottom-display">
+      <div class="info-display">
+        <h1 class="betbirr">መደብ &nbsp <%= betbirr %>
+        </h1>
+        <h1 class="winner">ደራሽ &nbsp <%= winningamount %>
+        </h1>
+      </div>
+      <div class="logo-area"></div>
+      <div class="called-numbers">
+        <span class="callednumbers">--</span>
+        <div class="small">ድምር ጥሪ</div> <!-- ✅ FIXED -->
+      </div>
+      <div id="prompt-message"></div>
+    </div>
+    <script>
+      localStorage.setItem('WinningAmount', '<%= winningamount %>');
+      localStorage.setItem('BetBirr', '<%= betbirr %>');
+      localStorage.setItem('LineChacker', '<%= linechaker %>');
+      localStorage.setItem('TotalBet', '<%= totalbet %>');
+      localStorage.setItem('VoiceType', '<%= voicetype %>');
+      localStorage.setItem('GameSpeed', '<%= gamespeed %>');
+      localStorage.setItem('Patterns', '<%- JSON.stringify(patterns) %>');
+      localStorage.setItem('SelectedCarts', '<%- JSON.stringify(selectedcarts) %>');
+      const voiceType = localStorage.getItem('VoiceType') || 'Recommended_Black_Male_Voice';
+      (function () {
+
+        const totalVoices = 80;
+
+        // Create loading overlay div and append to body
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'voice-download-overlay';
+        loadingOverlay.innerHTML = `<div class="loading-box">Downloading voices... <span id="voice-progress">0/${totalVoices}</span></div>`;
+        document.body.appendChild(loadingOverlay);
+
+        // Prompt message helper: show message and auto-hide after 3s
+        function showPrompt(type, message) {
+          const promptEl = document.getElementById('prompt-message');
+          promptEl.textContent = message;
+          promptEl.className = ''; // reset classes
+          promptEl.classList.add(type === 'error' ? 'error' : 'success', 'show');
+
+          setTimeout(() => {
+            promptEl.classList.remove('show');
+          }, 500);
+        }
+
+        // IndexedDB open
+        function openVoiceDB() {
+          return new Promise((resolve, reject) => {
+            const request = indexedDB.open('VoiceDB', 1);
+            request.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains('voices')) {
+                db.createObjectStore('voices', { keyPath: 'id' });
+              }
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+          });
+        }
+
+        // Check if voice exists in DB (check only first file)
+        async function voiceExistsInDB(voice) {
+          try {
+            const db = await openVoiceDB();
+            return new Promise((resolve) => {
+              const tx = db.transaction('voices', 'readonly');
+              const store = tx.objectStore('voices');
+              const getRequest = store.get(`${voice}_1`);
+              getRequest.onsuccess = () => resolve(!!getRequest.result);
+              getRequest.onerror = () => resolve(false);
+            });
+          } catch {
+            return false;
+          }
+        }
+
+        // Save voice file blob to DB
+        async function saveVoiceFile(voice, index, blob) {
+          const db = await openVoiceDB();
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction('voices', 'readwrite');
+            const store = tx.objectStore('voices');
+            store.put({ id: `${voice}_${index}`, voice, index, blob });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+          });
+        }
+
+        // Download single voice file and save
+        async function downloadVoiceFile(voice, index) {
+          const url = `/mp3/${voice}/${voice}${index}.mp3`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`File not found: ${voice}${index}.mp3`);
+          const blob = await response.blob();
+          await saveVoiceFile(voice, index, blob);
+        }
+
+        // Download all voices with progress
+        async function downloadAllVoices(voice) {
+          loadingOverlay.style.display = 'flex';
+          const progressSpan = document.getElementById('voice-progress');
+
+          try {
+            for (let i = 1; i <= totalVoices; i++) {
+              await downloadVoiceFile(voice, i);
+              progressSpan.textContent = `${i}/${totalVoices}`;
+            }
+            loadingOverlay.style.display = 'none';
+            showPrompt('success', '✅ Voice download complete.');
+            console.log('✅ Voice download finished.');
+            return true;
+          } catch (err) {
+            console.error('❌ Error during download:', err);
+            loadingOverlay.style.display = 'none';
+            showPrompt('error', '⚠️ Voice download failed or incomplete.');
+            return false;
+          }
+        }
+
+        // On page load, check voice and download if missing
+        window.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const exists = await voiceExistsInDB(voiceType);
+            if (!exists) {
+              console.log('🔍 Voice files not found. Starting download...');
+              await downloadAllVoices(voiceType);
+            } else {
+              console.log('📦 Voice files already in IndexedDB.');
+              showPrompt('success', 'Voice files are already downloaded.');
+            }
+          } catch (e) {
+            console.error('❌ Error initializing voice DB:', e);
+            showPrompt('error', '❌ Voice storage error!');
+          }
+        });
+      })();
+
+      const record_grid = document.querySelector(".record-grid");
+      const game_grid = document.querySelector(".bingo-numbers");
+      const startBtn = document.getElementById("start");
+      const pauseBtn = document.getElementById("pause");
+      const shuffleBtn = document.getElementById("shuffle");
+      const resetBtn = document.getElementById("reset");
+      const cartInput = document.querySelector(".cart-input");
+      const cartSubmit = document.querySelector(".cart-submite");
+      const lockBtn = document.getElementById("lock");
+      const record_title = document.querySelector(".record-title");
+      const calledDisplay = document.querySelector(".callednumbers");
+      const uncalledDisplay = document.querySelector(".uncallednumbers");
+      const logoArea = document.querySelector(".logo-area");
+
+
+      const gameSpeed = parseFloat(localStorage.getItem('GameSpeed')) || 10;
+
+      const selectedCarts = JSON.parse(localStorage.getItem('SelectedCarts') || '[]');
+      const Count = selectedCarts.length;
+      record_title.textContent = Count;
+
+
+      function initRecordGrid() {
+        record_grid.innerHTML = "";
+        for (let i = 1; i <= 25; i++) {
+          const cell = document.createElement("div");
+          cell.className = "record-cell";
+
+          // Make the 13th cell (center in 5x5 grid) "FREE"
+          if (i === 13) {
+            cell.textContent = "free";
+          } else {
+            cell.textContent = "O";
+          }
+
+          record_grid.appendChild(cell);
+        }
+      }
+
+
+      function initBingoGrid() {
+        game_grid.innerHTML = "";
+        for (let i = 1; i <= 75; i++) {
+          const cell = document.createElement("div");
+          cell.id = i;
+          cell.className = "bingo-cell";
+          cell.textContent = i;
+          game_grid.appendChild(cell);
+        }
+      }
+
+      function openDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open("VoiceDB", 1);
+          request.onerror = () => reject("Error opening IndexedDB");
+          request.onsuccess = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("voices")) {
+              reject("Object store 'voices' not found");
+              return;
+            }
+            resolve(db);
+          };
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("voices")) {
+              db.createObjectStore("voices", { keyPath: "id" });
+            }
+          };
+        });
+      }
+
+      function getVoiceBlob(db, number) {
+        return new Promise((resolve, reject) => {
+          const key = `${voiceType}_${number}`;
+          const tx = db.transaction("voices", "readonly");
+          const store = tx.objectStore("voices");
+          const request = store.get(key);
+          request.onsuccess = () => {
+            const result = request.result;
+            result?.blob ? resolve(result.blob) : reject();
+          };
+          request.onerror = () => reject();
+        });
+      }
+      // Game State Variables
+      let gameStarted = false;
+      let isPaused = false;
+      let shuffleUsed = false;
+      const calledNumbers = new Set();
+      let nextNumberTimeout = null;
+      let lockedCartelas = [];
+      const Patterns = localStorage.getItem('Patterns') || '["h", "v", "d", "sc", "lc"]';
+      let gameInitialized = false;
+      let shuffledNumbers = [];
+      let currentIndex = 0;
+
+      // Audio Functions
+      function playVoiceFromBlob(blob, number) {
+        const audioURL = URL.createObjectURL(blob);
+        const audio = new Audio(audioURL);
+
+        audio.onplaying = () => {
+          if (number >= 1 && number <= 75) {
+            const prefix = number <= 15 ? "B" :
+              number <= 30 ? "I" :
+                number <= 45 ? "N" :
+                  number <= 60 ? "G" : "O";
+            if (logoArea) logoArea.textContent = `${prefix} ${number}`;
+          }
+        };
+        audio.onended = () => URL.revokeObjectURL(audioURL);
+
+        audio.play().catch(() => {
+          console.warn("Failed to play audio.");
+        });
+      }
+
+      async function playVoiceNumber(number) {
+        try {
+          const db = await openDB();
+          const blob = await getVoiceBlob(db, number);
+          playVoiceFromBlob(blob, number);
+        } catch (err) {
+          console.error("Could not play voice:", err);
+          if (logoArea) logoArea.textContent = `Error ${number}`;
+        }
+      }
+
+      // Game State Management
+      function setGameState(started = gameStarted, paused = isPaused) {
+        gameStarted = started;
+        isPaused = paused;
+
+        startBtn.disabled = (started && !paused) || shuffleUsed === false;
+        pauseBtn.disabled = !started || paused;
+        resetBtn.disabled = !started || !paused;
+        cartSubmit.disabled = !started || !paused;
+        shuffleBtn.disabled = shuffleUsed || started;
+        lockBtn.disabled = !started || !paused || !cartInput.value.trim() || !isValidCartela(cartInput.value.trim());
+
+        [startBtn, pauseBtn, resetBtn, cartSubmit, shuffleBtn, lockBtn].forEach(btn => {
+          btn.classList.toggle("disabled-anim", btn.disabled);
+        });
+      }
+
+      // Grid Highlighting Functions
+      function highlightNumber(number) {
+        document.querySelectorAll(".bingo-cell.current").forEach(cell => {
+          cell.classList.remove("current");
+          cell.classList.add("highlight");
+        });
+
+        const currentCell = document.getElementById(number);
+        if (currentCell) currentCell.classList.add("current");
+
+        updateCalledUncalledCount();
+      }
+
+      function updateCalledUncalledCount() {
+        const called = document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current").length;
+        calledDisplay.textContent = called;
+      }
+
+      // Utility to shuffle numbers 1–75
+      function generateShuffledNumbers() {
+        const nums = Array.from({ length: 75 }, (_, i) => i + 1);
+        for (let i = nums.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [nums[i], nums[j]] = [nums[j], nums[i]];
+        }
+        return nums;
+      }
+
+      async function startGame() {
+        if (gameStarted && !isPaused) return;
+
+        setGameState(true, false);
+
+        cartInput.value = "";
+        cartSubmit.disabled = true;
+        initRecordGrid();
+        record_title.textContent = "የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ";
+        lockBtn.textContent = "Lock";
+
+        if (nextNumberTimeout) {
+          clearTimeout(nextNumberTimeout);
+          nextNumberTimeout = null;
+        }
+
+        try {
+          // Play voice 77 (non-blocking)
+          const voiceDone = (async () => {
+            try {
+              const db = await openDB();
+              const blob = await getVoiceBlob(db, 77);
+              const audioURL = URL.createObjectURL(blob);
+              const audio = new Audio(audioURL);
+
+              return new Promise(resolve => {
+                audio.onended = () => {
+                  URL.revokeObjectURL(audioURL);
+                  resolve();
+                };
+                audio.onerror = () => resolve();
+                audio.play().catch(() => resolve());
+              });
+            } catch (err) {
+              console.warn("Voice 77 failed:", err);
+            }
+          })();
+
+          // Server request
+          const serverDone = (async () => {
+            if (!gameInitialized) {
+              try {
+                const response = await fetch('/start-game', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                  const error = await response.json().catch(() => ({}));
+                  return { ok: false, message: error.message || "📡 Server error: Could not start game." };
+                }
+
+                gameInitialized = true;
+                shuffledNumbers = generateShuffledNumbers();
+                currentIndex = 0;
+                calledNumbers.clear();
+              } catch (err) {
+                return { ok: false, message: "🌐 Network error: Unable to reach the server." };
+              }
+            }
+            return { ok: true };
+          })();
+
+          const [_, serverResult] = await Promise.all([voiceDone, serverDone]);
+
+          if (!serverResult.ok) {
+            setGameState(true, true); // Pause
+            showPrompt("error", serverResult.message); // 🔴 Show error in your prompt system
+            return;
+          }
+
+          // Start number loop
+          const playNext = async () => {
+            if (isPaused) {
+              setGameState(true, true);
+              return;
+            }
+
+            if (currentIndex >= shuffledNumbers.length) {
+              setGameState(true, true);
+              return;
+            }
+
+            const number = shuffledNumbers[currentIndex++];
+            calledNumbers.add(number);
+            highlightNumber(number);
+            playVoiceNumber(number);
+
+            nextNumberTimeout = setTimeout(playNext, gameSpeed * 1000);
+          };
+
+          setTimeout(playNext, 0); // No delay after response
+        } catch (error) {
+          console.error("Error starting game:", error);
+          showPrompt("error", "⚠️ Unexpected error. Please try again.");
+          setGameState(false, false);
+        }
+      }
+
+
+      function pauseGame() {
+        if (!gameStarted || isPaused) return;
+
+        setGameState(true, true);
+        playVoiceNumber(78);
+
+        // Ensure cartInput is visible and not disabled before focusing
+        if (cartInput && !cartInput.disabled && cartInput.offsetParent !== null) {
+          setTimeout(() => {
+            cartInput.focus();
+            cartInput.select(); // Optional: highlight text
+          }, 100); // Slight delay helps with DOM/UI update timing
+        }
+      }
+
+      function resetGame() {
+        window.location.href = "/home";
+      }
+
+      // Main shuffle function (preserved structure)
+      function shuffleGame() {
+        if (shuffleUsed || gameStarted) return;
+        playShuffleSound(); // Voice 79 playback
+        shuffleUsed = true;
+        setGameState();
+      }
+
+      // Shuffle sound playback with synchronized visual effect
+      function playShuffleSound() {
+        indexedDB.open("VoiceDB").onsuccess = function (e) {
+          const db = e.target.result;
+          db.transaction("voices").objectStore("voices").get(`${voiceType}_79`).onsuccess = function (e) {
+            const blob = e.target.result?.blob;
+            if (blob) {
+              const audio = new Audio(URL.createObjectURL(blob));
+
+              // When audio is ready to play
+              audio.oncanplaythrough = function () {
+                // Start visual effect exactly when audio starts playing
+                audio.play().then(() => {
+                  startShuffleEffect();
+                }).catch(() => {
+                  console.log("Shuffle sound skipped");
+                  // Fallback: start visual effect even if sound fails
+                  startShuffleEffect();
+                });
+              };
+            }
+          };
+        };
+      }
+
+      // Visual shuffle effect (optimized) - text only version
+      function startShuffleEffect() {
+        const cells = document.querySelectorAll(".bingo-cell");
+
+        // Store original text content only once
+        const originalContents = Array.from(cells).map(cell => cell.textContent);
+
+        // Remove transitions for performance
+        cells.forEach(cell => cell.style.transition = "none");
+
+        let counter = 0;
+        const shuffleInterval = setInterval(() => {
+          cells.forEach(cell => {
+            // Generate random number between 1 and 75 for each cell
+            const randomNumber = Math.floor(Math.random() * 75) + 1;
+            cell.textContent = randomNumber;
+          });
+
+          counter += 100;
+          if (counter >= 2300) {
+            clearInterval(shuffleInterval);
+            // Restore original text content
+            cells.forEach((cell, i) => {
+              cell.textContent = originalContents[i];
+            });
+            initBingoGrid();
+            updateButtons();
+            setGameState(false, false);
+          }
+        }, 100);
+      }
+
+
+      // Cartela Management Functions
+      function handleLockCartela() {
+
+
+        if (gameStarted && !isPaused) {
+          record_title.textContent = "❌ ካርቴላ ለመቆለፍ ጨዋታው መቆም አለበት!";
+          return;
+        }
+
+        if (!gameStarted && cartSubmit.disabled) {
+          record_title.textContent = "❌ ጨዋታው ገና አልተጀመረም !";
+          return;
+        }
+
+        const value = cartInput.value.trim();
+        const cartNumber = parseInt(value, 10);
+
+        if (isNaN(cartNumber)) {
+          record_title.textContent = "❌ ካርተላ ለመፍታትም ሆነ ለመቆለፍ ያልተሳሳተ የካርተላ ቁጥር ያስገቡ";
+          return;
+        }
+
+        const isLocked = lockedCartelas.includes(cartNumber);
+        lockBtn.textContent = "Lock";
+
+        if (isLocked) {
+          lockBtn.textContent = "Lock";
+          lockedCartelas = lockedCartelas.filter(n => n !== cartNumber);
+          record_title.textContent = `🔓 ካርቴላ ቁጥር ${cartNumber} ተከፍቷል`;
+          initRecordGrid();
+          evaluateWin(cells, lineChecker, cartNumber);
+        } else {
+          lockedCartelas.push(cartNumber);
+          record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል`;
+          lockBtn.textContent = "Unlock";
+          initRecordGrid();
+        }
+
+        lockBtn.classList.remove("disabled-anim");
+      }
+
+      function handleCartSubmit() {
+        initRecordGrid();
+
+        if (gameStarted && !isPaused) {
+          record_title.textContent = "❌ ካርቴላ ለመፈተሽ ጨዋታው ተጀምሮ መቆም አለበት!";
+          return;
+        }
+
+        if (!gameStarted && cartSubmit.disabled) {
+          record_title.textContent = "❌ ጨዋታው ገና አልተጀመረም !";
+          return;
+        }
+
+        const cartNumber = parseInt(cartInput.value.trim(), 10);
+        if (isNaN(cartNumber) || cartNumber < 1 || cartNumber > 150) {
+          record_title.textContent = "❌ ካርቴላ ከ (1-150) ዉጪ በሲስተሞ አላስመዘገቡም!";
+          return;
+        }
+
+        const cartela = JSON.parse(localStorage.getItem("Cartelas") || "[]").find(c =>
+          c.cart_number === cartNumber &&
+          JSON.parse(localStorage.getItem('SelectedCarts') || []).includes(cartNumber)
+        );
+
+        if (!cartela || !cartela.grid) {
+          record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} አልተመዘገበም።`;
+          return;
+        }
+
+        const isLocked = lockedCartelas.includes(cartNumber);
+        window.lastChakeTime = new Date().toISOString();
+
+        if (isLocked) {
+          record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል.`;
+          lockBtn.textContent = "Unlock";
+          lockBtn.disabled = false;
+          lockBtn.classList.remove("disabled-anim");
+          return;
+        }
+
+        const grid = cartela.grid;
+        const highlightedCells = Array.from(document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current"))
+          .map(cell => cell.textContent.trim())
+          .filter(text => text !== "");
+
+        record_grid.innerHTML = "";
+        grid.flat().forEach(value => {
+          const cell = document.createElement("div");
+          cell.className = "record-cell";
+          cell.textContent = value;
+          if (value === "free") {
+            cell.classList.add("joker");
+          }
+          if (value !== "free" && highlightedCells.includes(String(value))) {
+            cell.classList.add("checked");
+          }
+          record_grid.appendChild(cell);
+        });
+
+        const lineChecker = parseInt(localStorage.getItem("LineChacker") || "1", 10);
+        const cellNodes = Array.from(record_grid.children);
+        evaluateWin(cellNodes, lineChecker, cartNumber);
+
+        lockBtn.textContent = "Lock";
+        lockBtn.disabled = false;
+        lockBtn.classList.remove("disabled-anim");
+      }
+
+      // Event Listeners
+      startBtn.addEventListener("click", startGame);
+      pauseBtn.addEventListener("click", pauseGame);
+      resetBtn.addEventListener("click", resetGame);
+      shuffleBtn.addEventListener("click", shuffleGame);
+      lockBtn.addEventListener("click", handleLockCartela);
+      cartSubmit.addEventListener("click", handleCartSubmit);
+
+      cartInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          if (isPaused && !cartSubmit.disabled) {
+            handleCartSubmit();
+          } else if (!isPaused) {
+            record_title.textContent = "❌ ካርቴላ ለመፈተሽ ጨዋታው መቆም አለበት!";
+          } else if (cartSubmit.disabled) {
+            record_title.textContent = "❌ ጨዋታው ገና አልተጀመረም !";
+          }
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space" || e.key === " " || e.key === "Enter") {
+          pauseGame();
+        }
+      });
+
+      document.addEventListener("mousedown", (e) => {
+        if (e.button === 0 || e.button === 2) {
+          pauseGame();
+        }
+      });
+
+      // Initialization
+      initRecordGrid();
+      initBingoGrid();
+      updateCalledUncalledCount();
+      setGameState(false, false);
+
+      function evaluateWin(cells, lineChecker, cartNumber) {
+        const size = 5;
+        let winCount = 0;
+        let lastNumberMatched = false;
+        let luckyPassed = false;
+
+
+        function isCellChecked(row, col) {
+          const index = row * size + col;
+          const cell = cells[index];
+          return cell && (cell.classList.contains("checked") || cell.classList.contains("joker"));
+        }
+
+        function getCell(row, col) {
+          return cells[row * size + col];
+        }
+
+        const logoText = logoArea.textContent.trim();
+        const lastCalledNumber = parseInt(logoText.split(" ")[1], 10);
+        const patterns = JSON.parse(localStorage.getItem("Patterns") || '["h", "v", "d", "sc", "lc"]');
+        cells.forEach(cell => cell.classList.remove("line-win"));
+        const lines = [];
+
+        // Horizontal lines
+        if (patterns.includes("h")) {
+          for (let row = 0; row < size; row++) {
+            const line = [0, 1, 2, 3, 4].map(col => getCell(row, col));
+            if (line.every((_, i) => isCellChecked(row, i))) {
+              lines.push(line);
+            }
+          }
+        }
+
+        // Vertical lines
+        if (patterns.includes("v")) {
+          for (let col = 0; col < size; col++) {
+            const line = [0, 1, 2, 3, 4].map(row => getCell(row, col));
+            if (line.every((_, i) => isCellChecked(i, col))) {
+              lines.push(line);
+            }
+          }
+        }
+
+        // Diagonal lines (d)
+        if (patterns.includes("d")) {
+          const diag1 = [0, 1, 2, 3, 4].map(i => getCell(i, i));
+          if (diag1.every((_, i) => isCellChecked(i, i))) lines.push(diag1);
+
+          const diag2 = [0, 1, 2, 3, 4].map(i => getCell(i, size - 1 - i));
+          if (diag2.every((_, i) => isCellChecked(i, size - 1 - i))) lines.push(diag2);
+        }
+
+        // Small corners (sc)
+        if (patterns.includes("sc")) {
+          const scCells = [
+            getCell(1, 1),
+            getCell(1, 3),
+            getCell(3, 1),
+            getCell(3, 3),
+          ];
+          if (scCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
+            lines.push(scCells);
+          }
+        }
+
+        // Large corners (lc)
+        if (patterns.includes("lc")) {
+          const lcCells = [
+            getCell(0, 0),
+            getCell(0, 4),
+            getCell(4, 0),
+            getCell(4, 4),
+          ];
+          if (lcCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
+            lines.push(lcCells);
+          }
+        }
+
+        const uniqueMatched = new Set();
+        let lineContainsLast = false;
+
+        lines.forEach(line => {
+          let containsLast = false;
+          line.forEach(cell => {
+            if (cell.textContent === String(lastCalledNumber)) containsLast = true;
+            uniqueMatched.add(cell);
+          });
+
+          winCount++;
+          if (containsLast) lineContainsLast = true;
+        });
+
+        let winner = false;
+
+        // ✅ Show `.line-win` only if true winner or luckyPassed
+        if (winCount >= lineChecker && lineContainsLast) {
+          record_title.textContent = `🎉 ካርቴላ ቁጥር ${cartNumber} አሸንፏል ✅`;
+          winner = true;
+          luckyPassed = false;
+          playVoiceNumber(80);
+          showWinnerEffectWithPapers();
+        } else if (winCount >= lineChecker && !lineContainsLast) {
+          record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} እድሉ አልፏል`;
+          winner = false;
+          luckyPassed = true;
+          playVoiceNumber(76);
+        } else {
+          record_title.textContent = `❌ ካርቴላ ${cartNumber} አላሸነፈም `;
+          winner = false;
+          luckyPassed = false;
+          playVoiceNumber(76);
+        }
+
+        // ✅ Highlight winning lines only if winner or luckyPassed (optional)
+        if (winner || luckyPassed) {
+          lines.flat().forEach(cell => cell.classList.add("line-win"));
+        }
+
+        // 🚀 Always send result to server
+        fetch('/check-cartela', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cart: String(cartNumber),
+            winner,
+            luckyPassed,
+          })
+        }).catch(error => {
+          console.error('Error sending cartela check:', error);
+        });
+
+      }
+      function showWinnerEffectWithPapers(duration = 4000, paperCount = 1000) {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const colors = ['#00ff00', '#ff66cc', '#ffcc00', '#00ccff', '#ff3366'];
+
+        const papers = [];
+
+        for (let i = 0; i < paperCount; i++) {
+          const startX = Math.random() * width;
+          const startY = Math.random() * height;
+          const initialVelocityY = -(5 + Math.random() * 8);
+
+          papers.push({
+            x: startX,
+            y: startY,
+            w: 8 + Math.random() * 16,
+            h: 12 + Math.random() * 20,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 10,
+            velocityX: (Math.random() - 0.5) * 1.5,
+            velocityY: initialVelocityY,
+            gravity: 0.25,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            opacity: 1,
+            reachedBottom: false
+          });
+        }
+
+        const startTime = performance.now();
+
+        function draw(now) {
+          ctx.clearRect(0, 0, width, height);
+
+          papers.forEach(p => {
+            p.velocityY += p.gravity;
+            p.x += p.velocityX;
+            p.y += p.velocityY;
+
+            if (p.y >= height) {
+              p.reachedBottom = true;
+              p.opacity -= 0.02;
+            }
+
+            ctx.save();
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = `rgba(${hexToRGB(p.color)}, ${Math.max(p.opacity, 0).toFixed(2)})`;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+
+          const allGone = papers.every(p => p.opacity <= 0);
+
+          if (!allGone) {
+            requestAnimationFrame(draw);
+          } else {
+            ctx.clearRect(0, 0, width, height);
+          }
+        }
+
+        requestAnimationFrame(draw);
+
+        function hexToRGB(hex) {
+          const bigint = parseInt(hex.replace('#', ''), 16);
+          return `${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}`;
+        }
+      }
+
+    </script>
+    <canvas id="confetti-canvas"
+      style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;"></canvas>
+</body>
+
+</html>

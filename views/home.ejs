@@ -6,434 +6,618 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bingo Fantasy</title>
   <!-- Google Fonts & Font Awesome (assuming you load them in your header partial) -->
-<style>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'MedievalSharp', cursive;
+      height: 100vh;
+      width: 100%;
+      display: grid;
+      grid-template-rows: 1fr 12fr 2fr;
+      grid-template-columns: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Server error message */
+    .server-error-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .server-error-message {
+      background-color: var(--danger-color);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: inline-block;
+      animation: slideIn 0.3s ease-out forwards;
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .server-error-message.hide {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    .bingo_grid {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+    }
+
+    .bingo_numbers {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      padding: 5px;
+      border-radius: 10px;
+      grid-template-rows: repeat(10, 1fr);
+      grid-template-columns: repeat(15, 1fr);
+      gap: 5px;
+    }
+
+    .cell {
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      transition:
+        transform 0.2s ease,
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+
+      /* Bolder-looking border using double shadows + inset */
+      border: 2px solid var(--border-color);
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.05),
+        /* soft light from top */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+        /* subtle bottom depth */
+        0 4px 8px var(--shadow-color);
+      /* outer shadow for lift */
+    }
+
+    .cell.toggled {
+      background-color: white;
+      color: black;
+      border: 5px solid rgb(208, 0, 255);
+      /* Bold but not excessive */
+      box-shadow:
+        inset 0 0 6px rgba(255, 255, 255, 0.4),
+        /* deep inner shadow */
+        0 0 10px var(--glow-color),
+        0 0 20px var(--glow-color);
+      animation: pulseBorder 1.2s infinite ease-in-out;
+      transition: all 0.3s ease;
+    }
 
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    @keyframes pulseBorder {
+      0% {
+        box-shadow: 0 0 5px var(--glow-color);
+      }
 
-body {
-  font-family: 'MedievalSharp', cursive;
-  height: 100vh;
-  width: 100%;
-  display: grid;
-  grid-template-rows: 1fr 12fr 2fr;
-  grid-template-columns: 100%;
-  overflow: hidden;
-  background-color: var(--bg-color);
-}
+      50% {
+        box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--danger-color);
+      }
 
-.bingo_grid {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg-color);
-}
+      100% {
+        box-shadow: 0 0 5px var(--glow-color);
+      }
+    }
 
-.bingo_numbers {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  padding: 5px;
-  border-radius: 10px;
-  grid-template-rows: repeat(10, 1fr);
-  grid-template-columns: repeat(15, 1fr);
-  gap: 5px;
-}
+    .cell.toggled::after {
+      content: attr(data-num);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 80px;
+      height: 80px;
+      background-color: white;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 6px 16px rgb(0, 0, 0);
+      animation: popNumber 1s ease-out forwards;
+      z-index: 10000;
+      pointer-events: none;
+    }
 
-.cell {
-  background: var(--accent-color);
-  color: var(--accent-text-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 900;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s;
-  position: relative;
-}
+    @keyframes popNumber {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
 
-.cell.toggled {
-  background-color: black;
-  color: white;
-  border: 5px solid rgb(255, 0, 0);
-}
+      10% {
+        opacity: 1;
+      }
 
-.cell.toggled::after {
-  content: attr(data-num);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
-  background-color: rebeccapurple;
-  color: rgb(255, 255, 255);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 24px;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  animation: pop 0.4s ease-out forwards;
-  pointer-events: none;
-  z-index: 1000;
-}
+      50% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 1;
+      }
 
-@keyframes pop {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-  }
-  25% {
-    transform: translate(-50%, -50%) scale(2);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(4);
-    opacity: 1;
-  }
-  75% {
-    transform: translate(-50%, -50%) scale(8);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(10);
-    opacity: 0;
-  }
-}
-.controllers {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: end;
-  justify-content: space-around;
-  padding: 10px 20px;
-  background-color: var(--bg-color);
-  gap: 20px;
-  flex-wrap: wrap;
-}
+      80% {
+        opacity: 1;
+      }
 
-.buttons {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+      100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+      }
+    }
 
-.controll {
-  position: relative;
-  z-index: 0;
-  flex: 1 1 auto;
-  height: 60%;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 80px;
-  padding: 18px 28px;
-  background: none;
-  color: var(--accent-text-color);
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
+    .controllers {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: end;
+      justify-content: space-around;
+      padding: 10px 20px;
+      background-color: var(--card-color);
+      gap: 20px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .buttons {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .controll {
+      position: relative;
+      z-index: 0;
+      flex: 1 1 auto;
+      height: 60%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 80px;
+      padding: 18px 28px;
+      background: none;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, color 0.3s ease;
+    }
+
+    .controll::before,
+    .controll::after {
+      content: "";
+      position: absolute;
+      border-radius: 80px;
+      transition: all 100ms ease-out;
+      pointer-events: none;
+    }
+
+    .controll::before {
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: -2;
+    }
+
+    .controll::after {
+      inset: 4px;
+      background-color: var(--button-color);
+      z-index: -1;
+    }
+
+    .controll:hover:not(:disabled)::after {
+      inset: 8px;
+      transition-timing-function: ease-in;
+    }
+
+    .controll:active:not(:disabled) {
+      color: var(--bg-color);
+    }
+
+    .controll:active:not(:disabled)::after {
+      opacity: 0.85;
+    }
+
+    .controll:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .input-label {
+      font-size: 1rem;
+      color: var(--text-color);
+      margin-bottom: 2px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .display-input {
+      color: var(--text-color);
+      background-color: var(--input-bg);
+      border: 3px solid var(--border-color);
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+      width: 60%;
+      font-size: 2rem;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      padding: 3px;
+      transition: box-shadow 0.3s;
+    }
+
+    .icon-button {
+      position: relative;
+      z-index: 0;
+      background: none;
+      color:white;
+      font-size: 1rem;
+      border: none;
+      padding: 6px;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s ease, color 0.3s ease;
+      user-select: none;
+      outline: none;
+    }
+
+    .icon-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: -2;
+    }
+
+    .icon-button::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background-color: var(--button-color);
+      z-index: -1;
+      transition: all 100ms ease-out;
+    }
+
+    .icon-button:hover::after {
+      inset: 0;
+      transition-timing-function: ease-in;
+    }
+
+    .icon-button:active {
+      color: var(--bg-color);
+    }
+
+    .icon-button:active::after {
+      inset: 4px;
+      opacity: 0.85;
+    }
+
+    .icon-button:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+
+    .lock-icon {
+      margin-left: 10px;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .lock-icon i {
+      font-size: 0.9em;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Cartela Input Wrapper */
+    .cartela-wrapper {
+      position: relative;
+      margin-bottom: 5px;
+      height: 50px;
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      align-items: stretch;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-input::-webkit-outer-spin-button,
+    .modal-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    #cartela {
+      flex: 3;
+      height: 100%;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--input-text);
+      background-color: var(--input-bg);
+      border: 5px solid var(--button-color);
+      outline: none;
+      padding: 0 12px;
+      border-right: none;
+    }
+
+    .cartela-wrapper button {
+      flex: 1;
+      border: none;
+      background-color: var(--button-color);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      padding: 0 10px;
+    }
+
+    .cartela-wrapper button:hover {
+      opacity: 0.85;
+    }
+
+    @media (max-width: 768px) {
+      .controllers {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .buttons,
+      .input-box {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .cartela-wrapper {
+        max-width: 140px;
+      }
+
+      #cartela {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+      }
+
+      .cartela-wrapper button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--card-color);
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(-30px);
+      transition: transform 0.3s ease;
+      border: 2px solid var(--primary-color);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      text-align: center;
+      color: var(--text-color);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+
+    .modal-input-container {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .modal-input {
+      width: 100%;
+      font-size: 2rem;
+      margin-bottom: 5px;
+      padding: 5px;
+      font-weight: 900;
+      border: 3px solid var(--primary-color);
+      border-radius: 8px;
+      text-align: center;
+      background-color: var(--input-bg);
+      color: var(--input-text);
+      transition: all 0.3s ease;
+    }
+.modal-input:focus {
   outline: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, color 0.3s ease;
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
 }
 
-.controll::before,
-.controll::after {
-  content: "";
-  position: absolute;
-  border-radius: 80px;
-  transition: all 0.25s ease;
-  pointer-events: none;
+/* Hide placeholder on focus */
+.modal-input:focus::placeholder {
+  opacity: 0;
+  transition: opacity 0.1s ease; /* optional smooth fade */
 }
 
-.controll::before {
-  inset: 0;
-  background-color: var(--border-color);
-  z-index: -2;
-}
+    
 
-.controll::after {
-  inset: 6px; /* Initial inner padding */
-  background-color: var(--accent-color);
-  z-index: -1;
-  transition: inset 0.25s ease, background-color 0.3s;
-}
+    .modal-input.invalid {
+      border-color: var(--danger-color);
+      animation: shake 0.5s;
+    }
 
-/* Hover effect – expands outward */
-.controll:hover:not(:disabled)::after {
-  inset: 0;
-  transition-timing-function: ease-in;
-}
+    @keyframes shake {
 
-/* Optional: subtle glow on hover */
-.controll:hover:not(:disabled)::before {
-  box-shadow: 0 0 12px var(--accent-color);
-}
+      0%,
+      100% {
+        transform: translateX(0);
+      }
 
-/* On click (active) – color inversion + opacity */
-.controll:active:not(:disabled) {
-  color: var(--bg-color);
-}
+      20%,
+      60% {
+        transform: translateX(-5px);
+      }
 
-.controll:active:not(:disabled)::after {
-  opacity: 0.85;
-}
+      40%,
+      80% {
+        transform: translateX(5px);
+      }
+    }
 
-/* Disabled style */
-.controll:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
+    .modal-error {
+      color: var(--danger-color);
+      font-size: 1.5rem;
+      min-height: 20px;
+      margin-top: 5px;
+          font-weight: 500;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-.input-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-}
+    .modal-error.show {
+      opacity: 1;
+    }
 
-.input-label {
-  font-size: 1rem;
-  color: var(--text-color);
-  margin-bottom: 2px;
-}
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
 
-.input-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+    .modal-button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-.display-input {
-  color: var(--accent-text-color);
-  background-color: white;
-  border: 3px solid var(--border-color);
-  box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.6),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.5);
-  width: 60%;
-  font-size: 2rem;
-  border-radius: 6px;
-  text-align: center;
-  font-weight: bold;
-  padding: 3px;
-  transition: box-shadow 0.3s;
-}
+    .modal-button.submit {
+      background-color: var(--success-color);
+      color: white;
+    }
 
-.icon-button {
-  position: relative;
-  z-index: 0;
-  background: none;
-  color: var(--accent-text-color);
-  font-size: 1rem;
-  border: none;
-  padding: 6px;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s ease, color 0.3s ease;
-  user-select: none;
-  outline: none;
-}
+    .modal-button.submit:hover {
+      background-color: #0ea674;
+    }
 
-.icon-button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background-color:var(--border-color);
-  z-index: -2;
-}
+    .modal-button.cancel {
+      background-color: var(--danger-color);
+      color: white;
+    }
 
-.icon-button::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background-color: var(--accent-color);
-  z-index: -1;
-  transition: all 100ms ease-out;
-}
-
-.icon-button:hover::after {
-  inset: 0;
-  transition-timing-function: ease-in;
-}
-
-.icon-button:active {
-  color: var(--bg-color);
-}
-
-.icon-button:active::after {
-  inset: 4px;
-  opacity: 0.85;
-}
-
-.icon-button:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-.lock-icon {
-  margin-left: 10px;
-  color: var(--text-color);
-  cursor: pointer;
-}
-
-.lock-icon i {
-  font-size: 0.9em;
-  transition: background-color 0.2s ease;
-}
-
-/* Improved Cartela Input Wrapper and Button */
-.cartela-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 60px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    0 4px 8px rgba(0, 0, 0, 0.05);
-  background-color: var(--bg-color);
-  border: 3px solid var(--border-color);
-}
-
-#cartela {
-  width: 60%;
-  height: 100%;
-  padding: 6px 12px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: center;
-  color: black;
-  background-color: rgb(255, 255, 255);
-  border: 5px solid var(--accent-color);
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.6),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.5);
-}
-
-#cartela:focus {
-  box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.6),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.5);
-}
-
-#cartela::placeholder {
-  color: black;
-  font-style: italic;
-  font-size: 1rem;
-  opacity: 0.5;
-}
-
-
-.cartela-wrapper button {
-  flex: 1;
-  height: 100%;
-  background-color: var(--accent-color);
-  color: black;
-  font-size: 1rem;
-  font-weight: 700;
-  border: none;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  padding: 0 16px;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s ease-in-out;
-  box-shadow:
-    inset 1px 1px 3px rgba(0, 0, 0, 0.25),
-    inset -1px -1px 3px rgba(255, 255, 255, 0.3);
-}
-
-.cartela-wrapper button:hover {
-  transform: scale(1.02);
-}
-
-.cartela-wrapper button:active {
-  transform: scale(0.98);
-  opacity: 0.85;
-}
-
-
-@media (max-width: 768px) {
-  .controllers {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .buttons,
-  .input-box {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .cartela-wrapper {
-    max-width: 140px;
-  }
-
-  #cartela {
-    padding: 6px 8px;
-    font-size: 0.9rem;
-  }
-
-  .cartela-wrapper button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-}
-
-  .alert-msg {
-    position: fixed;
-    top: 25%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgb(0, 0, 0);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-size: 18px;
-    z-index: 9999;
-    display: none;
-    transition: opacity 0.3s ease;
-  }
-  .alert-msg.alert-success {
-    background-color: rgba(0, 128, 0, 0.9);
-  }
-  .alert-msg.show {
-    display: block;
-  }
-</style>
-</style>
-  
+    .modal-button.cancel:hover {
+      background-color: #d73737;
+    }
+  </style>
 </head>
 
 <body>
-  <%- include('partials/header') -%>
+  <!-- New server error container -->
+  <div class="server-error-container" id="serverErrorContainer"></div>
+
+  <%- include('Partials/UserHeader') -%>
 
     <div class="main_cont bingo_grid">
       <div class="bingo_numbers"></div>
@@ -486,21 +670,83 @@ body {
         </button>
       </div>
 
-      <!-- Cartela submit: centered and functional -->
+      <!-- Cartela submit button -->
       <div class="buttons">
-        <div class="cartela-wrapper">
-          <input id="cartela"  placeholder="Inter Cartelas"
-            onkeydown="if(event.key==='Enter'){ submitCartela(); }">
-          <button onclick="submitCartela()">submite</button>
+        <button class="controll" onclick="openCartelaModal()">
+          <i class="fas fa-ticket-alt"></i> &nbsp; Add Cartela
+        </button>
+      </div>
+    </div>
+
+    <!-- Cartela Modal - Improved Version -->
+    <div class="modal-overlay" id="cartelaModal">
+      <div class="modal-content">
+        <div class="modal-title">Enter Cartela Number</div>
+        <div class="modal-input-container">
+          <input type="number" class="modal-input" id="modalCartelaInput" placeholder="Enter Cartela" autofocus
+            min="1" max="150">
+          <div class="modal-error" id="modalError"></div>
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-button cancel" onclick="closeCartelaModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button class="modal-button submit" onclick="submitCartela()">
+            <i class="fas fa-check"></i> Enter
+          </button>
         </div>
       </div>
     </div>
+
     <script>
 
-        document.addEventListener("DOMContentLoaded", () => {
-          const inp = document.getElementById('cartela');
-          inp.focus();
-          });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initializeInputs();
+
+        // Add event listener for Enter key in cartela modal
+        document.getElementById('modalCartelaInput').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            submitCartela();
+          }
+        });
+      });
+
+      // Function to show error messages (updated for all errors)
+      function showError(message, isSuccess = false) {
+        const container = document.getElementById('serverErrorContainer');
+
+        // Clear any existing errors immediately
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+
+        const errorElement = document.createElement('div');
+        errorElement.className = 'server-error-message';
+        errorElement.textContent = message;
+
+        if (isSuccess) {
+          errorElement.style.backgroundColor = '#2ecc71';
+        }
+
+        container.appendChild(errorElement);
+
+        // Trigger animation
+        setTimeout(() => {
+          errorElement.style.opacity = '1';
+          errorElement.style.transform = 'translateY(0)';
+        }, 10);
+
+        // Remove after delay
+        setTimeout(() => {
+          errorElement.classList.add('hide');
+          setTimeout(() => {
+            if (container.contains(errorElement)) {
+              container.removeChild(errorElement);
+            }
+          }, 500);
+        }, 500); // 5 seconds display time
+      }
 
       const fallbackDefaults = { zg: '1', birr: '10' };
       function initializeInputs() {
@@ -543,8 +789,6 @@ body {
         });
       });
 
-      initializeInputs();
-
       const buzzSound = new Audio('/buzz.mp3');
       buzzSound.preload = 'auto';
       buzzSound.load();
@@ -574,7 +818,7 @@ body {
       document.getElementById('sync').addEventListener('click', () => {
         const saved = localStorage.getItem('gamePayload');
         if (!saved) {
-          showAlert("የተመዘገበ መረጃ አልተገኘም", "error");
+          showError("የተመዘገበ መረጃ አልተገኘም");
           return;
         }
         const p = JSON.parse(saved);
@@ -590,79 +834,175 @@ body {
             selectedCells.delete(n);
           }
         });
+        showError("Previous game data synced successfully!", true);
       });
 
       function submitPlay() {
-        const z = parseInt(document.getElementById("zg").value);
-        const b = parseInt(document.getElementById("birr").value);
+        const z = parseInt(document.getElementById("zg").value, 10);
+        const b = parseInt(document.getElementById("birr").value, 10);
+
         if (!z || !b || selectedCells.size === 0) {
-          showAlert("የተሳሳተ የካርድ ቁጥር", "error");
+          showError("Please select at least one cartela and enter valid bet amounts");
           return;
         }
+
         const payload = {
           selectedcarts: Array.from(selectedCells),
           linechaker: z,
           betbirr: b
         };
-        localStorage.setItem('gamePayload', JSON.stringify(payload));
+        localStorage.setItem("gamePayload", JSON.stringify(payload));
+
         fetch("/home", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
-          .then(res => {
-            if (res.redirected) window.location.href = res.url;
-            return res.json();
+          .then(async res => {
+            // 1) handle server-side redirect
+            if (res.redirected) {
+              window.location.href = res.url;
+              return;
+            }
+
+            // 2) parse JSON error or success
+            let data;
+            try {
+              data = await res.json();
+            } catch (e) {
+              showError("Unexpected server response");
+              return;
+            }
+
+            // 3) non-2xx → show error
+            if (!res.ok || data.success === false) {
+              showError(data.message || "Server error occurred");
+              return;
+            }
+
+            // If we get here, it was successful
+            showError("Game submitted successfully!", true);
           })
-          .catch(err => console.error(err));
+          .catch(err => {
+            console.error(err);
+            showError("Network error occurred. Please try again.");
+          });
       }
 
+      function openCartelaModal() {
+        const modal = document.getElementById('cartelaModal');
+        modal.classList.add('active');
+
+        // Clear any previous errors and input
+        document.getElementById('modalError').classList.remove('show');
+        document.getElementById('modalCartelaInput').classList.remove('invalid');
+        document.getElementById('modalCartelaInput').value = '';
+
+        // Set focus to input with a slight delay to ensure modal is visible
+        setTimeout(() => {
+          document.getElementById('modalCartelaInput').focus();
+        }, 100);
+      }
+
+      function closeCartelaModal() {
+        document.getElementById('cartelaModal').classList.remove('active');
+      }
+      // Get voice type from localStorage or use default
+      const voiceType = localStorage.getItem('VoiceType') || 'Recommended_Black_Male_Voice';
+
+      // Simplified function to play voice number 76
+      async function playErrorSound() {
+        try {
+          // Open the voice database
+          const db = await openDB();
+
+          // Get the voice blob from IndexedDB
+          const blob = await new Promise((resolve, reject) => {
+            const request = db.transaction("voices").objectStore("voices").get(`${voiceType}_76`);
+            request.onsuccess = e => resolve(e.target.result?.blob);
+            request.onerror = e => reject(e.target.error);
+          });
+
+          if (!blob) throw new Error('Voice not found');
+
+          // Create and play the audio
+          const audio = new Audio(URL.createObjectURL(blob));
+          audio.play().catch(e => console.error('Audio playback failed:', e));
+        } catch (error) {
+          console.error('Error playing voice:', error);
+          // Fallback to buzz sound if available
+          if (typeof buzzSound !== 'undefined') buzzSound.play();
+        }
+      }
+
+      // Helper function to open IndexedDB
+      function openDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open("VoiceDB", 1);
+          request.onerror = () => reject("Error opening database");
+          request.onsuccess = (e) => resolve(e.target.result);
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains("voices")) {
+              db.createObjectStore("voices", { keyPath: "id" });
+            }
+          };
+        });
+      }
       function submitCartela() {
-        const inp = document.getElementById('cartela');
-        const n = parseInt(inp.value);
-        const val = inp.value.trim();
+        const input = document.getElementById('modalCartelaInput');
+        const errorElement = document.getElementById('modalError');
+        const val = input.value.trim();
+        const n = parseInt(val);
+
+        // Clear previous error state
+        input.classList.remove('invalid');
+        errorElement.classList.remove('show');
 
         if (!val || isNaN(n)) {
-          showAlert("እባክዎ ቁጥር ያስገቡ", "error");
-          buzzSound.play();
-          inp.focus();
-        } else if (n < 1 || n > 150) {
-          showAlert("ቁጥሩ በ1 እና በ150 መካከል መሆን አለበት", "error");
-          buzzSound.play();
-          inp.focus();
-        } else if (selectedCells.has(n)) {
-          showAlert("ይህ ካርድ አስቀድሞ ተመርጧል", "error");
-          buzzSound.play();
-          inp.focus();
-        } else {
-          selectedCells.add(n);
-          const cell = grid.children[n - 1];
-          cell.classList.add("toggled");
-          inp.focus();
+          playErrorSound();
+          showModalError(`የካርቴላ ቁጥር ያስገቡ!!!`, input, errorElement);
+          input.value = '';
+          playErrorSound();
+          return;
         }
 
-        inp.value = '';
-        inp.focus();
-      }
-
-      function showAlert(message, type = "success") {
-        let alert = document.querySelector(".alert-msg");
-        if (!alert) {
-          alert = document.createElement("div");
-          alert.className = "alert-msg";
-          document.body.appendChild(alert);
+        if (n < 1 || n > 150) {
+          playErrorSound();
+          showModalError(`ቁጥሩ ${n} በ1 እና 150 መካከል መሆን አለበት`, input, errorElement);
+          input.value = '';
+          return;
         }
 
-        alert.textContent = message;
-        alert.className = `alert-msg show alert-${type}`;
+        if (selectedCells.has(n)) {
+          playErrorSound();
+          showModalError(`ካርድ ቁጥር ${n} አስቀድሞ ተመርጧል`, input, errorElement);
+          input.value = '';
+          return;
+        }
 
-        setTimeout(() => {
-          alert.classList.remove("show");
-        }, 800);
+        // Success - add the cartela
+        selectedCells.add(n);
+        const cell = grid.children[n - 1];
+        cell.classList.add("toggled");
+
+        input.value = '';
+        input.focus();
+
+        errorElement.textContent = `Cartela ${n} added successfully!`;
+        errorElement.style.color = '#2ecc71';
+        errorElement.classList.add('show');
       }
-    
+
+      function showModalError(message, input, errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.color = '#e74c3c';
+        errorElement.classList.add('show');
+        input.classList.add('invalid');
+        input.focus();
+      }
+
     </script>
-    
 </body>
 
 </html>

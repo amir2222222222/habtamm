@@ -1,103 +1,127 @@
 require('dotenv').config();
-
-
 const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
 const path = require("path");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const { Server } = require("socket.io");
-const initSocketListeners = require("./socket");
-const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose');
+const { connectDB, isConnected } = require("./Config/Db");
 
-
-
-// Initialize environment variables
-dotenv.config();
-
-// Create the Express app instance
+// Initialize app
 const app = express();
-
-// Enable CORS for Express
-app.use(cors({
-  origin: "*", // Allow all origins (for development only)
-  methods: ["GET", "POST"]
-}));
-
 const server = http.createServer(app);
 
-// Enable CORS for Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-
-// Connect to DB
-connectDB();
-app.set('view cache', false);
-
-
-// Middleware
+// Middlewares
+app.use(cors({ origin: "*", methods: ["GET", "POST"] })); // 🔒 In production, specify allowed origins
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.set("view cache", false); // Disable view caching (optional)
 
-
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Surrogate-Control', 'no-store');
+// Database Connection Middleware
+app.use(async (req, res, next) => {
+  if (!isConnected()) {
+    try {
+      await connectDB();
+    } catch (err) {
+      return res.status(503).json({ 
+        success: false, 
+        message: "Service unavailable - Database connection failed" 
+      });
+    }
+  }
   next();
 });
 
-
-
-// Routes
-const authRoutes = require("./routes/auth");
-const homeRoutes = require("./routes/home");
-const headerRoutes = require("./routes/header");
-const settingRoutes = require("./routes/setting");
-const bingoRoutes = require("./routes/bingo_play");
-const adminRoutes = require("./routes/admin");
-const statusRoutes = require("./routes/status");
-const gamesRoutes = require("./routes/games");
-const profileRouter = require('./routes/profile');
-
-app.use('/', profileRouter);
-app.use("/", statusRoutes);
-app.use("/", gamesRoutes);
-app.use("/", authRoutes);
-app.use("/", homeRoutes);
-app.use("/", headerRoutes);
-app.use("/", settingRoutes);
-app.use("/", adminRoutes);
-app.use("/", bingoRoutes(io));
-
-
-// Global error handler (last middleware)
-app.use((err, req, res, next) => {
-  console.error('Global error:', err.stack || err.message);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error'
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.status(isConnected() ? 200 : 503).json({
+    status: isConnected() ? 'healthy' : 'unhealthy',
+    dbStatus: isConnected() ? 'connected' : 'disconnected',
+    uptime: process.uptime(),
+    timestamp: new Date()
   });
 });
 
-
-
-initSocketListeners(io);  // Use the separated Socket.IO logic
-
-// Start server
-const PORT = process.env.PORT;
-server.listen(PORT, () => {
-  console.log(` fuck yea u make me complete `);
+// Simple ping route
+app.get('/pingping', (req, res) => {
+  res.json({ message: 'pong' });
 });
+
+// Route imports
+const routes = [
+  './Routes/Auth',
+  './Routes/Home',
+  './Routes/Header',
+  './Routes/Setting',
+  './Routes/BingoPlay',
+  './Routes/Status',
+  './Routes/Games',
+  './Routes/Profile',
+  './Routes/AccountDelete',
+  './Routes/AccountList',
+  './Routes/AccountSignUp',
+  './Routes/AccountUpdate',
+  './Routes/SubAdminHystory',
+];
+
+// Register all routes
+routes.forEach(routePath => {
+  app.use("/", require(routePath));
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("❌ Global Error:", err.stack || err.message);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
+// Start server with DB connection verification
+async function startServer() {
+  try {
+    await connectDB();
+    
+    if (!isConnected()) {
+      throw new Error('Failed to establish database connection');
+    }
+
+    const PORT = process.env.PORT || 3000;
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📦 MongoDB status: ${isConnected() ? 'CONNECTED' : 'DISCONNECTED'}`);
+    });
+
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      console.log('\n🛑 Received SIGINT. Shutting down gracefully...');
+      await mongoose.connection.close();
+      console.log('MongoDB connection closed');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGTERM', async () => {
+      console.log('\n🛑 Received SIGTERM. Shutting down gracefully...');
+      await mongoose.connection.close();
+      console.log('MongoDB connection closed');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('🔥 Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();

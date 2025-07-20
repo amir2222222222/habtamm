@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
     }
-  
+
     /* Body Styles */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,22 +28,64 @@
       margin: 0;
       padding: 10px;
       background-color: #f4f4f4;
-      /* Fallback color if image fails */
       color: #333;
-      /* Default text color */
     }
-  
+
+    /* Login Container */
+    .login-container {
+      width: 100%;
+      max-width: 360px;
+      padding: 0 20px;
+    }
+
     /* Login Box Styles */
     .login-box {
       background-color: rgb(28, 22, 22);
       border-radius: 30px 0 10px;
       width: 100%;
-      max-width: 360px;
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       text-align: center;
+      margin-bottom: 15px;
     }
-  
+
+    /* Server Response Box */
+    .response-box {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .response-box.error {
+      background-color: rgba(220, 53, 69, 0.9);
+      color: white;
+      border: 1px solid #dc3545;
+    }
+
+    .response-box.success {
+      background-color: rgba(25, 135, 84, 0.9);
+      color: white;
+      border: 1px solid #198754;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     /* Phone Number Display */
     .phone {
       background-color: #000000;
@@ -53,14 +95,14 @@
       color: white;
       margin-bottom: 20px;
     }
-  
+
     /* Login Box Heading */
     .login-box h1 {
       font-size: 28px;
       color: #ffffff;
       margin-bottom: 20px;
     }
-  
+
     /* Form Labels */
     label {
       display: block;
@@ -69,7 +111,7 @@
       font-weight: 600;
       color: #ffffff;
     }
-  
+
     /* Input Fields */
     input[type="text"],
     input[type="password"] {
@@ -82,18 +124,19 @@
       color: #000000;
       background-color: #fff;
     }
-  
+
     /* Input Focus State */
     input:focus {
       border-color: #007bff;
       outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     }
-  
+
     /* Password Toggle Wrapper */
     .password-wrapper {
       position: relative;
     }
-  
+
     /* Toggle Password Button */
     #togglePassword {
       position: absolute;
@@ -105,8 +148,9 @@
       color: #007bff;
       font-size: 14px;
       cursor: pointer;
+      padding: 5px;
     }
-  
+
     /* Checkbox Group */
     .checkbox-group {
       display: flex;
@@ -116,12 +160,12 @@
       margin-top: 10px;
       color: white;
     }
-  
+
     /* Checkbox Input */
     .checkbox-group input {
       margin-right: 8px;
     }
-  
+
     /* Login Button */
     .login-btn {
       width: 100%;
@@ -132,15 +176,27 @@
       border-radius: 6px;
       font-size: 20px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
       font-weight: 700;
     }
-  
-    /* Login Button Hover State */
+
+    /* Login Button States */
     .login-btn:hover {
       background-color: #0056b3;
+      transform: translateY(-1px);
     }
-  
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.7;
+    }
+
     /* Error Message */
     .error {
       color: red;
@@ -148,133 +204,210 @@
       margin-bottom: 10px;
       display: none;
     }
-  
-    /* Invalid Input State */
+
+    /* Input Validation States */
     input.invalid {
-      border: 2px solid red;
+      border: 2px solid #dc3545;
     }
-  
-    /* Valid Input State */
+
     input.valid {
-      border: 2px solid green;
+      border: 2px solid #198754;
     }
-  
+
     /* Media Query for Small Screens */
     @media (max-width: 575.98px) {
       .login-box h1 {
         font-size: 24px;
       }
-  
+
       input,
       .login-btn {
         font-size: 14px;
       }
     }
-  
-    </style>
+  </style>
 </head>
 
 <body>
-  <div class="login-box">
-    <h1>Sign in</h1>
-    <form action="/login" method="POST" id="loginForm">
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" required autocomplete="username" />
-      <div id="usernameError" class="error">Username must be 3-30 chars, alphanumeric or _</div>
+  <div class="login-container">
+    <div class="login-box">
+      <h1>Sign in</h1>
+      <div id="serverResponse" class="response-box"></div>
+      <form action="/login" method="POST" id="loginForm">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required autocomplete="username" />
+        <div id="usernameError" class="error">Username must be 3-30 chars, alphanumeric or _</div>
 
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" name="password" id="password" required autocomplete="current-password" />
-        <button type="button" id="togglePassword">Show</button>
-      </div>
-      <div id="passwordError" class="error">
-        Password must be at least 8 characters and include upper/lowercase, digit, and special char.
-      </div>
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" name="password" id="password" required autocomplete="current-password" />
+          <button type="button" id="togglePassword">Show</button>
+        </div>
+        <div id="passwordError" class="error">
+          Password must be at least 8 characters and include upper/lowercase, digit, and special char.
+        </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="ageConfirm" name="ageConfirm" required />
-        <label for="ageConfirm">I confirm I am 18 years or older</label>
-      </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="ageConfirm" name="ageConfirm" required />
+          <label for="ageConfirm">I confirm I am 18 years or older</label>
+        </div>
 
-      <button type="submit" class="login-btn">Sign In</button>
-    </form>
+        <button type="submit" class="login-btn">Sign In</button>
+      </form>
+    </div>
   </div>
 
   <script>
-    
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordField = document.getElementById('password');
-    const usernameField = document.getElementById('username');
-    const loginForm = document.getElementById('loginForm');
-    const submitBtn = loginForm.querySelector('button[type="submit"]');
-    const passwordError = document.getElementById('passwordError');
-    const usernameError = document.getElementById('usernameError');
+       localStorage.setItem('Cartelas', '<%- JSON.stringify(cartelas) %>');
+    document.addEventListener('DOMContentLoaded', function () {
+      // DOM Elements
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordField = document.getElementById('password');
+      const usernameField = document.getElementById('username');
+      const loginForm = document.getElementById('loginForm');
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      const passwordError = document.getElementById('passwordError');
+      const usernameError = document.getElementById('usernameError');
+      const serverResponse = document.getElementById('serverResponse');
+      const ageConfirm = document.getElementById('ageConfirm');
 
-    function validateUsername() {
-      const username = usernameField.value.trim();
-      const valid = /^[a-zA-Z0-9_]{3,30}$/.test(username);
-      if (!valid) {
-        usernameField.classList.add('invalid');
-        usernameField.classList.remove('valid');
-        usernameError.style.display = 'block';
-      } else {
-        usernameField.classList.remove('invalid');
-        usernameField.classList.add('valid');
-        usernameError.style.display = 'none';
+      // Store original button text
+      const originalBtnText = submitBtn.innerHTML;
+
+      // Check for server messages in URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      const messageType = urlParams.get('type');
+
+      if (message) {
+        showServerMessage(message, messageType || 'error');
       }
-      return valid;
-    }
 
-    function validatePassword() {
-      const pwd = passwordField.value;
-      const valid = pwd.length >= 8 &&
-        /[a-z]/.test(pwd) &&
-        /[A-Z]/.test(pwd) &&
-        /\d/.test(pwd) &&
-        /[\W_]/.test(pwd);
-      if (!valid) {
-        passwordField.classList.add('invalid');
-        passwordField.classList.remove('valid');
-        passwordError.style.display = 'block';
-      } else {
-        passwordField.classList.remove('invalid');
-        passwordField.classList.add('valid');
-        passwordError.style.display = 'none';
-      }
-      return valid;
-    }
+      // Toggle password visibility
+      togglePassword.addEventListener('click', () => {
+        const isPassword = passwordField.type === 'password';
+        passwordField.type = isPassword ? 'text' : 'password';
+        togglePassword.textContent = isPassword ? 'Hide' : 'Show';
+        passwordField.focus();
+      });
 
-    function updateSubmitButton() {
-      const isFormValid = validateUsername() && validatePassword() && loginForm.ageConfirm.checked;
-      submitBtn.disabled = !isFormValid;
-    }
+      // Input validation handlers
+      usernameField.addEventListener('input', validateForm);
+      passwordField.addEventListener('input', validateForm);
+      ageConfirm.addEventListener('change', validateForm);
 
-    togglePassword.addEventListener('click', () => {
-      const isPassword = passwordField.type === 'password';
-      passwordField.type = isPassword ? 'text' : 'password';
-      togglePassword.textContent = isPassword ? 'Hide' : 'Show';
-    });
-
-    usernameField.addEventListener('input', () => {
-      validateUsername();
-      updateSubmitButton();
-    });
-
-    passwordField.addEventListener('input', () => {
-      validatePassword();
-      updateSubmitButton();
-    });
-
-    loginForm.ageConfirm.addEventListener('change', () => {
-      updateSubmitButton();
-    });
-
-    updateSubmitButton();
-
-    loginForm.addEventListener('submit', (e) => {
-      if (!validateUsername() || !validatePassword() || !loginForm.ageConfirm.checked) {
+      // Form submission handler
+      loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing In...';
+
+        try {
+          const formData = {
+            username: usernameField.value.trim(),
+            password: passwordField.value,
+            ageConfirm: ageConfirm.checked
+          };
+
+          const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            // Handle multiple errors from backend if available
+            if (result.errors && Array.isArray(result.errors)) {
+              const errorMessages = result.errors.join('<br>');
+              throw new Error(errorMessages);
+            }
+            throw new Error(result.error || result.message || 'Login failed');
+          }
+
+          // Show success message
+          showServerMessage(result.message || 'Login successful!', 'success');
+
+          // Reset form if needed (commented out as you might want to keep values)
+          // loginForm.reset();
+
+          // Reset validation styles
+          usernameField.classList.remove('valid', 'invalid');
+          passwordField.classList.remove('valid', 'invalid');
+
+          // Redirect if needed
+          if (result.redirect) {
+            setTimeout(() => {
+              window.location.href = result.redirect;
+            }, 1500);
+          }
+        } catch (err) {
+          // Display error message with proper formatting
+          showServerMessage(err.message, 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
+      });
+
+      // Form validation function
+      function validateForm() {
+        const isUsernameValid = validateUsername();
+        const isPasswordValid = validatePassword();
+        const isAgeConfirmed = ageConfirm.checked;
+
+        submitBtn.disabled = !(isUsernameValid && isPasswordValid && isAgeConfirmed);
+
+        return isUsernameValid && isPasswordValid && isAgeConfirmed;
       }
+
+      // Username validation
+      function validateUsername() {
+        const username = usernameField.value.trim();
+     const valid = /^.{8,30}$/.test(username);
+
+
+        usernameField.classList.toggle('invalid', !valid);
+        usernameField.classList.toggle('valid', valid);
+        usernameError.style.display = valid ? 'none' : 'block';
+
+        return valid;
+      }
+
+      // Password validation
+      function validatePassword() {
+        const pwd = passwordField.value;
+        const valid = pwd.length >= 8 &&
+          /[a-z]/.test(pwd) &&
+          /[A-Z]/.test(pwd) &&
+          /\d/.test(pwd) &&
+          /[\W_]/.test(pwd);
+
+        passwordField.classList.toggle('invalid', !valid);
+        passwordField.classList.toggle('valid', valid);
+        passwordError.style.display = valid ? 'none' : 'block';
+
+        return valid;
+      }
+
+      // Show server messages
+      function showServerMessage(message, type = 'error') {
+        serverResponse.innerHTML = message; // Using innerHTML to preserve <br> tags
+        serverResponse.className = `response-box ${type}`;
+        serverResponse.style.display = 'block';
+
+        // Auto-hide after appropriate time
+        setTimeout(() => {
+          serverResponse.style.display = 'none';
+        }, type === 'success' ? 5000 : 8000);
+      }
+
+      // Initial form validation
+      validateForm();
     });
   </script>
 </body>

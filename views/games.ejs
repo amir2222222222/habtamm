@@ -13,139 +13,293 @@
 
     body {
       font-family: 'MedievalSharp', cursive;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 30px;
+    }
+    .game-history-body {
+      font-family: 'MedievalSharp', cursive;
       background-color: var(--bg-color);
       color: var(--text-color);
       height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      gap: 10px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .top-bar {
+    .top-bar-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0px 20px;
-      background-color: var(--bg-color);
+      padding: 15px 20px;
+      background-color: var(--card-color);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      flex-shrink: 0;
     }
 
-    .top-bar h2 {
+    .history-title {
       font-size: 24px;
       color: var(--text-color);
       font-weight: 600;
     }
 
-    .fetch-form {
+    .date-filter-form {
       display: flex;
       gap: 10px;
       align-items: center;
     }
 
-    .fetch-form input[type="date"] {
-      padding: 6px 20px;
-      border: 2px solid var(--border-color);
-      border-radius: 4px;
-      background: white;
-      color:black;
+    .date-input-field {
+      padding: 8px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--input-text);
+      font-family: inherit;
+      transition: all 0.3s ease;
     }
 
-    .fetch-form button {
-      padding: 6px 25px;
-      background: #00b09c;
+    .date-input-field:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .fetch-button {
+      padding: 8px 25px;
+      background: var(--success-color);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-family: inherit;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
 
-    .fetch-form button:hover {
+    .fetch-button:hover {
       background: #059669;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .summary {
+    .fetch-button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary-container {
       text-align: right;
       font-size: 14px;
+      color: var(--text-color);
     }
 
-    .summary div {
+    .summary-item {
       margin-bottom: 4px;
     }
 
-    .main-content {
-      overflow-y: auto;
-      padding: 10px 20px;
+    .main-content-area {
+      flex: 1;
+      padding: 15px 20px;
+      background-color: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .table-wrapper {
-      overflow: auto;
-      border-radius: 6px;
+    .table-scroll-container {
+      height: calc(100vh - 130px);
+      display: flex;
+      flex-direction: column;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      background-color: var(--card-color);
+      overflow: hidden;
     }
 
-    table {
+    .table-header-wrapper {
+      flex-shrink: 0;
+    }
+
+    .table-body-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .games-table {
       width: 100%;
       border-collapse: collapse;
-      background-color: var(--bg-color);
+      background-color: var(--card-color);
       table-layout: fixed;
     }
 
-    th,
-    td {
-      padding: 8px 6px;
+    .table-header-cell,
+    .table-data-cell {
+      padding: 12px 8px;
       text-align: center;
       font-size: 14px;
       word-break: break-word;
       color: var(--text-color);
-      font-weight: 500;
+      position: relative;
     }
 
-    td {
+    .table-data-cell {
       border-bottom: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      height: 40px;
+      transition: all 0.3s ease;
     }
 
-    th {
-      background-color: var(--bg-color);
-      color: var(--text-color);
+    .table-header-cell {
+      background-color: var(--primary-color);
+      color: white;
       text-transform: uppercase;
       font-weight: 600;
       border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    tbody tr {
+    .table-header-cell.col-1 {
+      width: 40px;
+    }
+
+    .table-header-cell.col-2 {
+      width: 140px;
+    }
+
+    .table-header-cell.col-3 {
+      width: 140px;
+    }
+
+    .table-header-cell.col-4 {
+      width: 80px;
+    }
+
+    .table-header-cell.col-5 {
+      width: 120px;
+    }
+
+    .table-header-cell.col-6 {
+      width: 120px;
+    }
+
+    .table-header-cell.col-7 {
+      width: 120px;
+    }
+
+    .table-header-cell.col-8 {
+      width: 120px;
+    }
+
+    .table-header-cell.col-9 {
+      width: 80px;
+    }
+
+    .table-header-cell.col-10 {
+      width: 80px;
+    }
+
+    .table-header-cell.col-11 {
+      width: 100px;
+    }
+
+    .table-header-cell.col-12 {
+      width: 100px;
+    }
+
+    .table-data-cell.col-1 {
+      width: 40px;
+    }
+
+    .table-data-cell.col-2 {
+      width: 140px;
+    }
+
+    .table-data-cell.col-3 {
+      width: 140px;
+    }
+
+    .table-data-cell.col-4 {
+      width: 80px;
+    }
+
+    .table-data-cell.col-5 {
+      width: 120px;
+    }
+
+    .table-data-cell.col-6 {
+      width: 120px;
+    }
+
+    .table-data-cell.col-7 {
+      width: 120px;
+    }
+
+    .table-data-cell.col-8 {
+      width: 120px;
+    }
+
+    .table-data-cell.col-9 {
+      width: 80px;
+    }
+
+    .table-data-cell.col-10 {
+      width: 80px;
+    }
+
+    .table-data-cell.col-11 {
+      width: 100px;
+    }
+
+    .table-data-cell.col-12 {
+      width: 100px;
+    }
+
+    .table-row {
       transition: background-color 0.2s ease;
     }
 
-    tbody tr:hover {
-      background-color: rgba(0, 0, 0, 0.05);
+    .table-row.even-row {
+      background-color: var(--bg-color);
     }
 
-    @media (max-width: 768px) {
-      .top-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
+    .table-row:hover {
+      background-color: var(--highlight-color);
+    }
 
-      .summary {
-        text-align: left;
-      }
+    .table-row:hover .table-data-cell {
+      white-space: normal;
+      height: auto;
+      overflow: visible;
+      position: relative;
+      z-index: 1;
+      background-color: var(--card-color);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
   </style>
 </head>
 
-<body>
-  <%- include('partials/header') -%>
+<body class="game-history-body">
+  <%- include('Partials/UserHeader') -%>
 
     <div class="header">
-      <div class="top-bar">
-        <h2>Game History</h2>
+      <div class="top-bar-container">
+        <h2 class="history-title">Game History</h2>
 
-        <form class="fetch-form" id="filterForm" method="POST" action="/games">
-          <input type="date" name="date" id="date" value="<%= selectedDate %>" required />
-          <button type="submit">Fetch</button>
+        <form class="date-filter-form" id="filterForm" method="POST" action="/games">
+          <input type="date" class="date-input-field" name="date" id="date" value="<%= selectedDate %>" required />
+          <button type="submit" class="fetch-button">Fetch</button>
         </form>
 
         <% let totalCommission=0; let totalDersh=0; if (games && games.length> 0) {
@@ -154,69 +308,83 @@
           totalDersh += parseFloat(game.dersh || 0);
           });
           } %>
-          <div class="summary">
-            <div>Total Commission:
+          <div class="summary-container">
+            <div class="summary-item">Total Commission:
               <span style="color:#059669; font-weight:bold;">$<%= totalCommission.toFixed(2) %></span>
             </div>
-            <div>Total Dersh:
+            <div class="summary-item">Total Dersh:
               <span style="color:#ef4444; font-weight:bold;">$<%= totalDersh.toFixed(2) %></span>
             </div>
           </div>
       </div>
 
-      <div class="main-content">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>ያለቀበት ሰአት</th>
-                <th>የጀመረበት ሰአት</th>
-                <th>መደብ</th>
-                <th>የተመዘገቡ ካርቴላዎች</th>
-                <th>የተፈተሹ <br> ካርቴላዎች</th>
-                <th>አሸናፊ <br> ካርቴላዎች</th>
-                <th>እድል ያለፋቸው <br> ካርተላዎች</th>
-                <th>ደራሽ</th>
-                <th>ተቆራጭ $</th>
-                <th>ያጫዋች</th>
-                <th>ያጫዋች <br> ሱቅ ስም</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (games.length===0) { %>
-                <tr>
-                  <td colspan="12">No game records found for this date.</td>
-                </tr>
-                <% } else { %>
-                  <% games.forEach((game, i)=> { %>
-                    <tr>
-                      <td>
-                        <%= i + 1 %>
-                      </td>
-                      <td>
-                        <%= new Date(game.gameStart).toLocaleString() %>
-                      </td>
-                      <td>
-                        <%= new Date(game.gameEnd).toLocaleString() %>
-                      </td>
-                      <td>
-                        <%= game.betBirr %>
-                      </td>
-                      <td>
-                        <%= (game.pickedCards || []).join(', ') %></td>
-                    <td><%= (game.onCalls || []).join(' , ') %></td>
-                    <td><%= (game.winnerCards || []).join(' , ') %></td>
-                    <td><%= (game.luckypassedCards || []).join(' , ') %></td>
-                    <td>$<%= parseFloat(game.dersh || 0).toFixed(2) %></td>
-                    <td>$<%= parseFloat(game.commission || 0).toFixed(2) %></td>
-                    <td><%= game.by %></td>
-                    <td><%= game.shopname %></td>
+      <div class="main-content-area">
+        <div class="table-scroll-container">
+          <div class="table-header-wrapper">
+            <table class="games-table">
+              <thead>
+            <tr class="table-header-row">
+              <th class="table-header-cell col-1">#</th>
+              <th class="table-header-cell col-2">ያለቀበት ሰአት</th>
+              <th class="table-header-cell col-3">የጀመረበት ሰአት</th>
+              <th class="table-header-cell col-4">መደብ</th>
+              <th class="table-header-cell col-5">የተመዘገቡ ካርቴላዎች</th>
+              <th class="table-header-cell col-6">የተፈተሹ <br> ካርቴላዎች</th>
+              <th class="table-header-cell col-7">አሸናፊ <br> ካርቴላዎች</th>
+              <th class="table-header-cell col-8">እድል ያለፋቸው <br> ካርቴላዎች</th>
+              <th class="table-header-cell col-9">ደራሽ</th>
+              <th class="table-header-cell col-10">ተቆራጭ $</th>
+              <th class="table-header-cell col-11">አጫዋች</th>
+              <th class="table-header-cell col-12">የሱቅ ስም</th>
+            </tr>
+
+              </thead>
+            </table>
+          </div>
+          <div class="table-body-wrapper">
+            <table class="games-table">
+              <tbody>
+                <% if (games.length===0) { %>
+                  <tr class="table-row">
+                    <td class="table-data-cell" colspan="12">No game records found for this date.</td>
+                  </tr>
+                  <% } else { %>
+                    <% games.forEach((game, i)=> { %>
+                      <tr class="table-row <%= i % 2 === 0 ? 'even-row' : '' %>">
+                        <td class="table-data-cell col-1">
+                          <%= i + 1 %>
+                        </td>
+                        <td class="table-data-cell col-2">
+                          <%= new Date(game.gameStart).toLocaleString() %>
+                        </td>
+                        <td class="table-data-cell col-3">
+                          <%= new Date(game.gameEnd).toLocaleString() %>
+                        </td>
+                        <td class="table-data-cell col-4">
+                          <%= game.betBirr %>
+                        </td>
+                        <td class="table-data-cell col-5" title="<%= (game.pickedCards || []).join(', ') %>">
+                          <%= (game.pickedCards || []).join(', ') %>
+                    </td>
+                    <td class="table-data-cell col-6" title="<%= (game.onCalls || []).join(' , ') %>">
+                      <%= (game.onCalls || []).join(' , ') %>
+                    </td>
+                    <td class="table-data-cell col-7" title="<%= (game.winnerCards || []).join(' , ') %>">
+                      <%= (game.winnerCards || []).join(' , ') %>
+                    </td>
+                    <td class="table-data-cell col-8" title="<%= (game.luckypassedCards || []).join(' , ') %>">
+                      <%= (game.luckypassedCards || []).join(' , ') %>
+                    </td>
+                    <td class="table-data-cell col-9">$<%= parseFloat(game.dersh || 0).toFixed(2) %></td>
+                    <td class="table-data-cell col-10">$<%= parseFloat(game.commission || 0).toFixed(2) %></td>
+                    <td class="table-data-cell col-11" title="<%= game.by %>"><%= game.by %></td>
+                    <td class="table-data-cell col-12" title="<%= game.shopname %>"><%= game.shopname %></td>
                   </tr>
                 <% }) %>
               <% } %>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

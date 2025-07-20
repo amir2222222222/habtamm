@@ -1,66 +1,77 @@
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret123";
+const { verifyToken } = require("../Utils/Jwt");
+const { User, Admin, SubAdmin } = require('../Models/User');
 
-// Authenticated users only
-function requireAuth(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) return next();
+// Cookie settings
+const cookieOpts = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+};
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+const authorizeRole = (expectedRole) => {
+  return async (req, res, next) => {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        res.clearCookie("token", cookieOpts);
+        return res.redirect("/login");
+      }
 
-    // Redirect based on role
-    if (req.user.role === "admin") {
-      return res.redirect("/admin");
-    } else if (req.user.role === "user") {
-      return res.redirect("/home");
-    } else {
+      const decoded = verifyToken(token);
+      if (!decoded || !decoded.role) {
+        res.clearCookie("token", cookieOpts);
+        return res.redirect("/login");
+      }
+
+      // Fetch account from DB to check suspension status
+      let account;
+      if (decoded.role === 'admin') {
+        account = await Admin.findById(decoded.id);
+        if (!account || account.state === 'suspended') {
+          res.clearCookie("token", cookieOpts);
+          return res.redirect("/login");
+        }
+        req.admin = decoded;
+      }
+
+      if (decoded.role === 'subadmin') {
+        account = await SubAdmin.findById(decoded.id);
+        if (!account || account.state === 'suspended') {
+          res.clearCookie("token", cookieOpts);
+          return res.redirect("/login");
+        }
+        req.subadmin = decoded;
+      }
+
+      if (decoded.role === 'user') {
+        account = await User.findById(decoded.id);
+        if (!account || account.state === 'suspended') {
+          res.clearCookie("token", cookieOpts);
+          return res.redirect("/login");
+        }
+        req.user = decoded;
+      }
+
+      // Role mismatch
+      if (decoded.role !== expectedRole) {
+        res.clearCookie("token", cookieOpts);
+        return res.redirect("/login");
+      }
+
+      next();
+    } catch (err) {
+      console.error('Authorization error:', err);
+      res.clearCookie("token", cookieOpts);
       return res.redirect("/login");
     }
-  } catch (err) {
-    return res.redirect("/login");
-  }
-}
+  };
+};
 
-// User role only
-function user(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) return res.redirect("/login");
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    if (req.user.role === "user") {
-      return next();
-    } else if (req.user.role === "admin") {
-      return res.redirect("/admin");
-    } else {
-      return res.redirect("/home");
-    }
-  } catch (err) {
-    return res.redirect("/login");
-  }
-}
-
-// Admin role only
-function admin(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) return res.redirect("/login");
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    if (req.user.role === "admin") {
-      return next();
-    } else if (req.user.role === "user") {
-      return res.redirect("/home");
-    } else {
-      return res.redirect("/login");
-    }
-  } catch (err) {
-    return res.redirect("/login");
-  }
-}
-
-module.exports = { requireAuth, user, admin };
+// Export role-based middleware
+module.exports = {
+  user: authorizeRole('user'),
+  admin: authorizeRole('admin'),
+  subadmin: authorizeRole('subadmin'),
+};

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --danger: #f72585;
+            --success: #2ecc71;
+            --dark: #2b2d42;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 0.5rem;
+            --border-radius-sm: 0.25rem;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: var(--dark);
+            padding-top: 4rem;
+            min-height: 100vh;
+            
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9375rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-input.valid {
+            border-color: var(--success);
+        }
+
+        .form-input.invalid {
+            border-color: var(--danger);
+        }
+
+        .input-hint {
+            font-size: 0.70rem;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .input-hint.valid {
+            color: var(--success);
+        }
+
+        .input-hint.invalid {
+            color: var(--danger);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .submit-btn:disabled {
+            background-color: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.875rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-message.show {
+            display: flex;
+        }
+
+        .error-message {
+            background-color: #fde8ef;
+            color: var(--danger);
+            border-left: 3px solid var(--danger);
+        }
+
+        .success-message {
+            background-color: #e8f9f0;
+            color: var(--success);
+            border-left: 3px solid var(--success);
+        }
+
+        .status-icon {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/SubAdminHeader') -%>
+        <div class="main-container">
+            <div class="form-container">
+                <h1 class="form-title">Create User</h1>
+            
+                <div id="error-message" class="status-message error-message">
+                    <i class="fas fa-exclamation-circle status-icon"></i>
+                    <span id="error-text"></span>
+                </div>
+            
+                <div id="success-message" class="status-message success-message">
+                    <i class="fas fa-check-circle status-icon"></i>
+                    <span id="success-text"></span>
+                </div>
+            
+                <form id="signup-form">
+                    <!-- Name -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="text" id="name" name="name" class="form-input" required pattern=".{4,}" placeholder="name">
+                        </div>
+                        <span class="input-hint" id="name-hint">Minimum 4 characters (any characters allowed)</span>
+                    </div>
+            
+                    <!-- Username -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="text" id="username" name="username" class="form-input" required pattern=".{7,}"
+                                placeholder="username">
+                        </div>
+                        <span class="input-hint" id="username-hint">Minimum 7 characters (any characters allowed)</span>
+                    </div>
+            
+                    <!-- Password -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="password" id="password" name="password" class="form-input" required
+                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{7,}$" placeholder="password">
+                            <button type="button" class="password-toggle" id="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="input-hint" id="password-hint">
+                            Minimum 7 characters, must include uppercase, lowercase, number & special character
+                        </span>
+                    </div>
+            
+                    <!-- Credit (unchanged) -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="number" id="credit" name="credit" class="form-input" required min="0" step="0.01"
+                                placeholder="creadit">
+                        </div>
+                        <span class="input-hint" id="credit-hint">Must be a positive number</span>
+                    </div>
+            
+                    <!-- User Commission (unchanged) -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="number" id="user_commission" name="user_commission" class="form-input" required min="1"
+                                max="100" placeholder="user_commission">
+                        </div>
+                        <span class="input-hint" id="user_commission-hint">Must be between 1 and 100</span>
+                    </div>
+            
+                    <!-- Owner Commission (unchanged) -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="number" id="owner_commission" name="owner_commission" class="form-input" required min="1"
+                                max="100" placeholder="owner_commission">
+                        </div>
+                        <span class="input-hint" id="owner_commission-hint">Must be between 1 and 100</span>
+                    </div>
+            
+                    <button type="submit" class="submit-btn" id="submit-btn">Register User</button>
+                </form>
+            </div>
+
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const form = document.getElementById('signup-form');
+                const errorBox = document.getElementById('error-message');
+                const successBox = document.getElementById('success-message');
+                const errorText = document.getElementById('error-text');
+                const successText = document.getElementById('success-text');
+                const toggleBtn = document.getElementById('toggle-password');
+                const passwordInput = document.getElementById('password');
+                const submitBtn = document.getElementById('submit-btn');
+
+                // Toggle password visibility
+                toggleBtn.addEventListener('click', () => {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    toggleBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+
+                // Validate input and update styles
+                const validateInput = (input, hint) => {
+                    const isValid = input.checkValidity();
+                    const isEmpty = input.value.trim() === '';
+
+                    // Reset styles if empty
+                    if (isEmpty) {
+                        input.classList.remove('valid', 'invalid');
+                        hint.classList.remove('valid', 'invalid');
+                        return false;
+                    }
+
+                    // Apply validation styles
+                    if (isValid) {
+                        input.classList.add('valid');
+                        input.classList.remove('invalid');
+                        hint.classList.add('valid');
+                        hint.classList.remove('invalid');
+                    } else {
+                        input.classList.add('invalid');
+                        input.classList.remove('valid');
+                        hint.classList.add('invalid');
+                        hint.classList.remove('valid');
+                    }
+
+                    return isValid;
+                };
+
+                // Setup validation for all inputs
+                const setupValidation = (inputId, hintId) => {
+                    const input = document.getElementById(inputId);
+                    const hint = document.getElementById(hintId);
+
+                    input.addEventListener('input', () => {
+                        if (document.activeElement === input) {
+                            validateInput(input, hint);
+                        }
+                    });
+
+                    input.addEventListener('focus', () => {
+                        validateInput(input, hint);
+                    });
+
+                    input.addEventListener('blur', () => {
+                        if (input.value.trim() === '') {
+                            input.classList.remove('valid', 'invalid');
+                            hint.classList.remove('valid', 'invalid');
+                        }
+                    });
+                };
+
+                // Initialize validation for all fields
+                setupValidation('name', 'name-hint');
+                setupValidation('username', 'username-hint');
+                setupValidation('password', 'password-hint');
+                setupValidation('credit', 'credit-hint');
+                setupValidation('user_commission', 'user_commission-hint');
+                setupValidation('owner_commission', 'owner_commission-hint');
+
+                // Form submission
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    errorBox.classList.remove('show');
+                    successBox.classList.remove('show');
+                    submitBtn.disabled = true;
+
+                    // Validate all fields
+                    const inputs = [
+                        { input: document.getElementById('name'), hint: document.getElementById('name-hint') },
+                        { input: document.getElementById('username'), hint: document.getElementById('username-hint') },
+                        { input: document.getElementById('password'), hint: document.getElementById('password-hint') },
+                        { input: document.getElementById('credit'), hint: document.getElementById('credit-hint') },
+                        { input: document.getElementById('user_commission'), hint: document.getElementById('user_commission-hint') },
+                        { input: document.getElementById('owner_commission'), hint: document.getElementById('owner_commission-hint') }
+                    ];
+
+                    const allValid = inputs.every(({ input, hint }) => {
+                        return validateInput(input, hint);
+                    });
+
+                    if (!allValid) {
+                        errorText.textContent = 'Please fix all validation errors before submitting';
+                        errorBox.classList.add('show');
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
+                    try {
+                        // Sanitize inputs
+                        const name = document.getElementById('name').value.trim();
+                        const username = document.getElementById('username').value.trim();
+                        const password = document.getElementById('password').value.trim();
+                        const credit = parseFloat(document.getElementById('credit').value);
+                        const user_commission = parseInt(document.getElementById('user_commission').value);
+                        const owner_commission = parseInt(document.getElementById('owner_commission').value);
+
+                        // Submit form
+                        const response = await fetch('/signup/user', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name,
+                                username,
+                                password,
+                                credit,
+                                user_commission,
+                                owner_commission
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            // Handle multiple errors from backend if available
+                            if (result.errors && Array.isArray(result.errors)) {
+                                const errorMessages = result.errors.join('<br>');
+                                throw new Error(errorMessages);
+                            }
+                            throw new Error(result.error || 'Failed to register user');
+                        }
+
+                        // Show success message
+                        successText.textContent = 'User account created successfully!';
+                        successBox.classList.remove('hidden');
+                        successBox.classList.add('show');
+                        form.reset();
+
+                        // Reset validation styles
+                        inputs.forEach(({ input, hint }) => {
+                            input.classList.remove('valid', 'invalid');
+                            hint.classList.remove('valid', 'invalid');
+                        });
+
+                        // Hide success message after 5 seconds
+                        setTimeout(() => {
+                            successBox.classList.remove('show');
+                            successBox.classList.add('hidden');
+                        }, 5000);
+                    } catch (err) {
+                        // Display error message with proper formatting
+                        errorText.innerHTML = err.message; // Using innerHTML to preserve <br> tags
+                        errorBox.classList.remove('hidden');
+                        errorBox.classList.add('show');
+
+                        // Hide error after 8 seconds
+                        setTimeout(() => {
+                            errorBox.classList.remove('show');
+                            errorBox.classList.add('hidden');
+                        }, 8000);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>

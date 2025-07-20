@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { user } = require('../middleware/authmiddleware');
-const asyncHandler = require('../utils/asyncHandler');
-
+const asyncHandler = require("../Utils/AsyncHandler");
+const { user } = require("../Middleware/AuthMiddleware");
 // Constants
 const VOICE_FOLDER = path.join(__dirname, '..', 'public', 'mp3');
 const defaultPatterns = ['h', 'v', 'd', 'sc', 'lc'];
 const defaultVoiceType = 'Recommended_Black_Male_Voice';
-const defaultGameSpeed = 2;
+const defaultGameSpeed = 5;
 
 // Helpers
 function getVoiceOptions() {
@@ -25,8 +24,8 @@ function getVoiceOptions() {
 
 // GET /setting
 router.get('/setting', user, asyncHandler(async (req, res) => {
-  const voiceType = req.cookies.VoiceType || defaultVoiceType;
-  const gameSpeed = req.cookies.GameSpeed || defaultGameSpeed;
+  const voiceType = req.cookies.Voice || defaultVoiceType;
+  const gameSpeed = req.cookies.Speed || defaultGameSpeed;
   const patterns = req.cookies.Patterns ? JSON.parse(req.cookies.Patterns) : defaultPatterns;
   const voiceOptions = getVoiceOptions();
 
@@ -49,7 +48,7 @@ router.get('/setting', user, asyncHandler(async (req, res) => {
 router.post('/save-speed', user, asyncHandler(async (req, res) => {
   const newSpeed = req.body.speed || defaultGameSpeed;
 
-  res.cookie('GameSpeed', newSpeed, {
+  res.cookie('Speed', newSpeed, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -62,7 +61,7 @@ router.post('/save-speed', user, asyncHandler(async (req, res) => {
 router.post('/save-voice', user, asyncHandler(async (req, res) => {
   const newVoice = req.body.voice || defaultVoiceType;
 
-  res.cookie('VoiceType', newVoice, {
+  res.cookie('Voice', newVoice, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -89,4 +88,8 @@ router.post('/save-patterns', user, asyncHandler(async (req, res) => {
   res.redirect('/setting');
 }));
 
-module.exports = router;
+module.exports = router;                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                             
+                                                                                                                               
+                                                                                                                     
+                                                                                                                                                                                           

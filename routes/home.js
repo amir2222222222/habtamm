@@ -1,149 +1,138 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
-const { user } = require("../middleware/authmiddleware");
-const { generateToken } = require("../utils/jwt");
-require("dotenv").config();
+const { User, Admin, SubAdmin } = require('../Models/User'); // Adjust as needed
+const { user } = require("../Middleware/AuthMiddleware");
+const { verifyToken, generateToken } = require("../Utils/Jwt");
+const asyncHandler = require("../Utils/AsyncHandler");
 
-// Helper to get cookie or default safely (no signature verification)
-function getCookieOrDefault(req, name, defaultValue, parseJson = false) {
-  try {
-    const val = req.cookies[name];
-    if (!val) return defaultValue;
-    return parseJson ? JSON.parse(val) : val;
-  } catch {
-    return defaultValue;
-  }
-}
+const cookieOpts = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  path: "/",
+};
 
-// GET: Render home and set default cookies
-router.get("/home", user, async (req, res) => {
-  try {
+router.get(
+  "/home",
+  user,
+  asyncHandler(async (req, res) => {
     const foundUser = await User.findById(req.user.id).lean();
     if (!foundUser) {
-      return res.status(404).render("home", { error: "User not found." });
+      // If unauthenticated or user not found, send to login page
+      return res.status(404).render("login");
     }
-
-    const defaultVoiceType = "Recommended_Black_Male_Voice";
-    const defaultGameSpeed = "2";
-    const defaultPatterns = ["h", "v", "d", "sc", "lc"];
-
-    const voicetype = getCookieOrDefault(req, "VoiceType", defaultVoiceType);
-    const gamespeed = getCookieOrDefault(req, "GameSpeed", defaultGameSpeed);
-    const patterns = getCookieOrDefault(req, "Patterns", defaultPatterns, true);
-
-    const oneYear = 1000 * 60 * 60 * 24 * 365;
-
-    res.cookie("VoiceType", voicetype, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: oneYear
-    });
-
-    res.cookie("GameSpeed", gamespeed, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: oneYear
-    });
-
-    res.cookie("Patterns", JSON.stringify(patterns), {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: oneYear
-    });
-
     res.render("home");
-  } catch (error) {
-    res.status(500).render("home", { error: "Internal server error." });
-  }
-});
+  })
+);
 
-// POST: Accept bet and set game-related cookies
-router.post("/home", user, async (req, res) => {
-  try {
-    const { betbirr, selectedcarts, linechaker } = req.body;
+router.post(
+  "/home",
+  user,
+  asyncHandler(async (req, res) => {
+    let { betbirr, selectedcarts, linechaker } = req.body;
 
-    if (!betbirr || isNaN(betbirr) || parseFloat(betbirr) < 10) {
-      return res.status(400).json({ message: "betbir must be a number and at least 10." });
+    // Coerce types
+    betbirr = parseFloat(betbirr);
+    linechaker = parseInt(linechaker, 10);
+
+    // Ensure selectedcarts is always an array
+    if (!Array.isArray(selectedcarts)) {
+      selectedcarts = selectedcarts ? [selectedcarts] : [];
     }
 
-    if (!Array.isArray(selectedcarts) || selectedcarts.length === 0) {
-      return res.status(400).json({ message: "selectedcarts must be a non-empty array." });
+    // Validation
+    if (isNaN(betbirr) || betbirr < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "betbirr must be at least 10."
+      });
     }
 
-    const lineChakerNum = parseInt(linechaker, 10);
-    if (isNaN(lineChakerNum) || lineChakerNum < 1 || lineChakerNum > 5) {
-      return res.status(400).json({ message: "linechaker must be a number between 1 and 5." });
+    if (selectedcarts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select at least one cart."
+      });
     }
 
+    if (isNaN(linechaker) || linechaker < 1 || linechaker > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "linechaker must be between 1 and 5."
+      });
+    }
+
+    // Fetch user
     const foundUser = await User.findById(req.user.id).lean();
     if (!foundUser) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({
+        success: false,
+        message: "User not found."
+      });
     }
 
-    const betBirrNum = parseFloat(betbirr);
-    const userComission = parseFloat(foundUser.user_commission) || 0;
-    const userBalance = parseFloat(foundUser.balance) || 0;
+    const userBalance = parseFloat(foundUser.balance);
+    const commission = parseFloat(foundUser.user_commission) || 0;
 
-    const totalBet = betBirrNum * selectedcarts.length;
+    const totalBet = betbirr * selectedcarts.length;
+    const cartCount = selectedcarts.length;
 
     let winningAmount;
-    let requiredBalance;
+    let requiredbalance;
 
-    if (selectedcarts.length <= 3) {
+    if (cartCount <= 3) {
       winningAmount = totalBet;
-      requiredBalance = 0;
+      requiredbalance = 0;
     } else {
-      winningAmount = totalBet - (totalBet * (userComission / 100));
-      requiredBalance = totalBet - winningAmount;
+      winningAmount = totalBet - (totalBet * (commission / 100));
+      requiredbalance = totalBet - winningAmount;
     }
 
-    if (userBalance < requiredBalance) {
-      return res.status(400).json({ message: "Insufficient balance to place the bet." });
+    if (userBalance < requiredbalance) {
+      return res.status(400).json({
+        success: false,
+        message: "Insufficient balance."
+      });
     }
 
-    // Cookie options
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/"
-    };
+    // Token update logic
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication token missing."
+      });
+    }
 
-    res.cookie("BetBirr", betBirrNum, cookieOptions);
-    res.cookie("SelectedCarts", JSON.stringify(selectedcarts), cookieOptions);
-    res.cookie("LineChaker", lineChakerNum, cookieOptions);
-    res.cookie("WinningAmount", winningAmount.toFixed(2), cookieOptions);
-    res.cookie("TotalBet", totalBet.toFixed(2), cookieOptions);
+    let payload;
+    try {
+      payload = verifyToken(token);
+    } catch (err) {
+      console.warn("❌ Token verification failed:", err.message);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token."
+      });
+    }
 
-     // JWT-signed token only for RequiredBalance
-    const requiredBalanceToken = generateToken({ requiredBalance: requiredBalance.toFixed(2) });
-    res.cookie("RequiredBalanceToken", requiredBalanceToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    // Update token fields
+    Object.assign(payload, {
+      betbirr,
+      selectedcarts,
+      linechaker,
+      totalBet: +totalBet.toFixed(2),
+      winningAmount: +winningAmount.toFixed(2),
+      requiredbalance: +requiredbalance.toFixed(2),
     });
 
-    // JWT for game opening access
-    const openToken = generateToken({ open: "true" });
-    res.cookie("OpenToken", openToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 10000 // 10 seconds
-    });
+    // Regenerate and set token
+    const updatedToken = generateToken(payload);
+    res.cookie("token", updatedToken, cookieOpts);
 
-    res.redirect("/bingo_play");
-  } catch (error) {
-    res.status(500).json({ message: "Server error while submitting bet." });
-  }
-});
+    // Success: redirect user to bingo_play
+    return res.redirect("/bingo_play");
+  })
+);
 
 module.exports = router;

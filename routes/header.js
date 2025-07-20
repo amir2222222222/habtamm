@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { user } = require("../middleware/authmiddleware");
-const User = require("../models/User");
-const asyncHandler = require("../utils/asyncHandler");
+const { User } = require('../Models/User');
+const asyncHandler = require("../Utils/AsyncHandler");
+const { user } = require("../Middleware/AuthMiddleware");
+
 
 router.get("/balance", user, asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -10,14 +11,9 @@ router.get("/balance", user, asyncHandler(async (req, res) => {
   try {
     const foundUser = await User.findById(userId).lean();
 
-    // Check if foundUser is valid
-    if (!foundUser) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
     // Check if balance is undefined or null
     if (foundUser.balance === undefined || foundUser.balance === null) {
-      return res.status(500).json({ message: "Balance is unavailable." });
+      return res.status(500).json({ message: "unavailable." });
     }
 
     // Ensure balance is a number

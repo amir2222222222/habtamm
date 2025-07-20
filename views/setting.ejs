@@ -4,480 +4,445 @@
 <head>
     <meta charset="UTF-8" />
     <title>Bingo Controls</title>
-    <style>
-        /* ======= Existing styles ======= */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+<style>
+    .bingo-controls-reset {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bingo-controls-html,
+    .bingo-controls-body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'MedievalSharp', cursive;
+    }
+
+    .bingo-controls-body {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 100%;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .bingo-controls-main-content {
+   
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: 20px;
+        background-color: var(--bg-color);
+    }
+
+    .bingo-controls-container {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 900px;
+        background-color: var(--card-color);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .bingo-controls-column {
+        flex: 1 1 50%;
+        padding: 20px;
+    }
+
+    .bingo-controls-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 1.4rem;
+    }
+
+    .bingo-controls-label {
+        display: block;
+        margin: 15px 0 8px;
+        color: var(--text-color);
+        font-size: 1rem;
+    }
+
+    .bingo-controls-input,
+    .bingo-controls-select {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 1rem;
+        color: var(--input-text);
+        background-color: var(--input-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .bingo-controls-input:focus,
+    .bingo-controls-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Hide spinner buttons */
+    .bingo-controls-input[type=number]::-webkit-outer-spin-button,
+    .bingo-controls-input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .bingo-controls-button {
+        position: relative;
+        margin-top: 15px;
+        z-index: 0;
+        width: 100%;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        background: none;
+        color: white;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        outline: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .bingo-controls-button::before,
+    .bingo-controls-button::after {
+        content: "";
+        position: absolute;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+        pointer-events: none;
+    }
+
+    .bingo-controls-button::before {
+        inset: 0;
+        background-color: var(--border-color);
+        z-index: -2;
+    }
+
+    .bingo-controls-button::after {
+        inset: 2px;
+        background-color: var(--button-color);
+        z-index: -1;
+    }
+
+    .bingo-controls-button:hover:not(:disabled)::after {
+        inset: 0;
+        background-color: var(--secondary-color);
+    }
+
+    .bingo-controls-button:hover:not(:disabled)::before {
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .bingo-controls-button:active:not(:disabled) {
+        transform: translateY(1px);
+    }
+
+    .bingo-controls-button:disabled {
+        cursor: default;
+        opacity: 0.6;
+    }
+
+    .bingo-controls-checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .bingo-controls-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        color: var(--text-color);
+        user-select: none;
+    }
+
+    .bingo-controls-checkbox {
+        appearance: none;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--input-bg);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .bingo-controls-checkbox:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .bingo-controls-checkbox::after {
+        content: '';
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        opacity: 0;
+        transition: opacity 0.1s ease;
+    }
+
+    .bingo-controls-checkbox:checked::after {
+        opacity: 1;
+    }
+
+    .bingo-controls-checkbox:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+
+    .bingo-controls-pattern-layout {
+        display: flex;
+           align-items: center;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .bingo-controls-pattern-display {
+        width: 200px;
+        height: 200px;
+        background-color: rgba(0, 74, 124, 0.1);
+        border: 2px solid var(--border-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .bingo-controls-pattern-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bingo-controls-loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(6px);
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+
+    .bingo-controls-loading-box {
+        background-color: var(--card-color);
+        color: var(--text-color);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-size: 1.1rem;
+        min-width: 300px;
+        border: 1px solid var(--border-color);
+    }
+
+    .bingo-controls-alert {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 1rem;
+        z-index: 11000;
+        color: white;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        max-width: 90%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .bingo-controls-alert.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .bingo-controls-alert-success {
+        background-color: var(--success-color);
+    }
+
+    .bingo-controls-alert-error {
+        background-color: var(--danger-color);
+    }
+
+    .bingo-controls-prompt {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 200px;
+        max-width: 80vw;
+        padding: 15px 25px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background-color: var(--text-color);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 9999;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .bingo-controls-prompt.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .bingo-controls-prompt-success {
+        background-color: var(--success-color);
+    }
+
+    .bingo-controls-prompt-error {
+        background-color: var(--danger-color);
+    }
+
+    @media (max-width: 768px) {
+        .bingo-controls-container {
+            flex-direction: column;
         }
 
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        body {
-            display: grid;
-            grid-template-rows: auto 1fr;
-            grid-template-columns: 100%;
-            background-color: var(--bg-color);
-            font-family: 'MedievalSharp', cursive;
-        }
-
-        .main-content {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 20px;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 900px;
-            background-color: var(--bg-color);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 5px var(--border-color);
-            overflow: hidden;
-            width: 100%;
-            color: var(--text-color);
-        }
-
-        .column {
-            flex: 1 1 50%;
+        .bingo-controls-column {
+            flex: 1 1 100%;
             padding: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-            color: var(--text-color);
+        .bingo-controls-column:last-child {
+            border-bottom: none;
         }
 
-        label {
-            display: block;
-            margin: 15px 0 5px;
-            color: var(--text-color);
-        }
-
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            outline: none;
-            transition: border 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        input[type="number"]:focus,
-        select:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 5px var(--accent-color);
-        }
-
-        /* Hide spinner buttons */
-        input[type=number]::-webkit-outer-spin-button,
-        input[type=number]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .submit-btn {
-  position: relative;
-  margin-top: 10px;
-  z-index: 0;
-  width: 100%;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 80px;
-  padding: 10px 20px;
-  background: none;
-  color: var(--accent-text-color);
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, color 0.3s ease;
-}
-
-.submit-btn::before,
-.submit-btn::after {
-  content: "";
-  position: absolute;
-  border-radius: 80px;
-  transition: all 0.25s ease;
-  pointer-events: none;
-}
-
-.submit-btn::before {
-  inset: 0;
-  background-color: var(--border-color);
-  z-index: -2;
-}
-
-.submit-btn::after {
-  inset: 6px; /* Initial inner padding */
-  background-color: var(--accent-color);
-  z-index: -1;
-  transition: inset 0.25s ease, background-color 0.3s;
-}
-
-/* Hover effect – expands outward */
-.submit-btn:hover:not(:disabled)::after {
-  inset: 0;
-  transition-timing-function: ease-in;
-}
-
-/* Optional: subtle glow on hover */
-.submit-btn:hover:not(:disabled)::before {
-  box-shadow: 0 0 12px var(--accent-color);
-}
-
-/* On click (active) – color inversion + opacity */
-.submit-btn:active:not(:disabled) {
-  color: var(--bg-color);
-}
-
-.submit-btn:active:not(:disabled)::after {
-  opacity: 0.85;
-}
-
-/* Disabled style */
-.submit-btn:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Better spacing between checkbox and text */
-  margin-bottom: 0.75rem;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--text-color);
-  user-select: none;
-  transition: color 0.2s ease;
-}
-
-.checkbox-group input[type="checkbox"] {
-  appearance: none;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: 2px solid #94a3b8; /* subtle border */
-  border-radius: 0.25rem;
-  background-color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  position: relative;
-}
-
-.checkbox-group input[type="checkbox"]:checked {
-  background-color: #2563eb; /* blue when checked */
-  border-color: #2563eb;
-}
-
-.checkbox-group input[type="checkbox"]::after {
-  content: '';
-  width: 0.4rem;
-  height: 0.7rem;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  opacity: 0;
-  transition: opacity 0.1s ease;
-}
-
-.checkbox-group input[type="checkbox"]:checked::after {
-  opacity: 1;
-}
-
-.checkbox-group input[type="checkbox"]:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-
-        .pattern-layout {
-            display: flex;
-            align-items: flex-start;
-            gap: 30px;
-        }
-
-        .box-display {
-            width: 200px;
-            height: 200px;
-            background-color: #004a7c93;
-            display: flex;
-            justify-content: center;
+        .bingo-controls-pattern-layout {
+            flex-direction: column;
             align-items: center;
-            overflow: hidden;
-            flex-shrink: 0;
+            gap: 20px;
         }
 
-        .box-display img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .bingo-controls-pattern-display {
+            width: 150px;
+            height: 150px;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .column {
-                flex: 1 1 100%;
-                border-bottom: 1px solid #ddd;
-            }
-
-            .column:last-child {
-                border-bottom: none;
-            }
-
-            .pattern-layout {
-                flex-direction: column;
-                align-items: center;
-            }
+        .bingo-controls-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
 
-        #progress-text {
-            color: #000;
+        .bingo-controls-button {
+            padding: 10px 15px;
+            font-size: 1rem;
         }
-
-        /* ======= New styles for loading overlay and alerts ======= */
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(6px);
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .loading-box {
-            background-color: #ffffffdd;
-            color: #333;
-            border-radius: 15px;
-            padding: 40px 30px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            font-size: 18px;
-            font-family: Arial, sans-serif;
-            min-width: 320px;
-            user-select: none;
-        }
-
-        .alert-msg {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: Arial, sans-serif;
-            z-index: 11000;
-            color: #fff;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            max-width: 90%;
-            box-sizing: border-box;
-        }
-
-        .alert-msg.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .alert-success {
-            background-color: #28a745;
-            box-shadow: 0 0 15px #28a745cc;
-        }
-
-        .alert-error {
-            background-color: #dc3545;
-            box-shadow: 0 0 15px #dc3545cc;
-        }
-    </style>
+    }
+</style>
 </head>
 
-<body>
-    <%- include('partials/header') -%>
+<body class="bingo-controls-body">
+    <%- include('Partials/UserHeader') -%>
 
-        <div class="main-content">
-            <div class="container">
+        <div class="bingo-controls-main-content">
+            <div class="bingo-controls-container">
                 <!-- Speed Form -->
-                <div class="column">
-                    <h2>Speed</h2>
+                <div class="bingo-controls-column">
+                    <h2 class="bingo-controls-title">Speed</h2>
                     <form action="/save-speed" method="POST">
-                        <label for="speed">Speed (1-5)</label>
-                        <input type="number" id="speed" name="speed" min="1" max="5" value="<%= GameSpeed %>" required>
-                        <button type="submit" class="submit-btn">Save Speed</button>
+                        <label class="bingo-controls-label" for="bingo-controls-speed">Speed (1-5)</label>
+                        <input class="bingo-controls-input" type="number" id="bingo-controls-speed" name="speed" min="1"
+                            max="10" value="<%= GameSpeed %>" required>
+                        <button type="submit" class="bingo-controls-button">Save Speed</button>
                     </form>
                 </div>
 
                 <!-- Voice Form -->
-                <div class="column">
-                    <h2>Voice</h2>
-                    <form id="voice-form" action="/save-voice" method="POST">
-                        <label for="voice">Voice Type</label>
-                        <select id="voice" name="voice" required>
+                <div class="bingo-controls-column">
+                    <h2 class="bingo-controls-title">Voice</h2>
+                    <form id="bingo-controls-voice-form" action="/save-voice" method="POST">
+                        <label class="bingo-controls-label" for="bingo-controls-voice">Voice Type</label>
+                        <select class="bingo-controls-select" id="bingo-controls-voice" name="voice" required>
                             <% voiceOptions.forEach(function(voice) { %>
                                 <option value="<%= voice %>" <%=voice===selectedVoice ? 'selected' : '' %>>
                                     <%= voice.charAt(0).toUpperCase() + voice.slice(1) %>
                                 </option>
                                 <% }); %>
                         </select>
-                        <button type="submit" class="submit-btn">Save Voice</button>
+                        <button type="submit" class="bingo-controls-button">Save Voice</button>
                     </form>
                 </div>
 
                 <!-- Patterns Form -->
-                <div class="column">
-                    <h2>Patterns</h2>
+                <div class="bingo-controls-column">
+                    <h2 class="bingo-controls-title">Patterns</h2>
                     <form action="/save-patterns" method="POST">
-                        <div class="pattern-layout">
-                            <div class="box-display">
-                                <img id="pattern-img" src="/patters/any-vertical.png" alt="Pattern Preview"
-                                    style="display: block;" />
+                        <div class="bingo-controls-pattern-layout">
+                            <div class="bingo-controls-pattern-display">
+                                <img id="bingo-controls-pattern-img" class="bingo-controls-pattern-image"
+                                    src="/patters/any-vertical.png" alt="Pattern Preview" style="display: block;" />
                             </div>
-                            <div class="checkbox-group">
+                            <div class="bingo-controls-checkbox-group">
                                 <% Object.entries(patternLabels).forEach(([value, label])=> { %>
-                                    <label>
-                                        <input type="checkbox" name="pattern" value="<%= value %>"
-                                            <%=checkedPatterns.includes(value) ? 'checked' : '' %>
-                                        onmouseover="showImage('<%= value %>')" onmouseout="hideImage()" />
+                                    <label class="bingo-controls-checkbox-label">
+                                        <input class="bingo-controls-checkbox" type="checkbox" name="pattern"
+                                            value="<%= value %>" <%=checkedPatterns.includes(value) ? 'checked' : '' %>
+                                        onmouseover="bingoControlsShowImage('<%= value %>')"
+                                            onmouseout="bingoControlsHideImage()" />
                                             <%= label %>
                                     </label>
                                     <% }); %>
                             </div>
                         </div>
-                        <button type="submit" class="submit-btn">Save Patterns</button>
+                        <button type="submit" class="bingo-controls-button">Save Patterns</button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- Loading overlay -->
-        <div class="loading-overlay" id="loading-overlay">
-            <div class="loading-box">
-                <p id="progress-text">Downloading voices... 0/75</p>
+        <div class="bingo-controls-loading-overlay" id="bingo-controls-loading-overlay">
+            <div class="bingo-controls-loading-box">
+                <p id="bingo-controls-progress-text">Downloading voices... 0/80</p>
             </div>
         </div>
 
         <!-- Alert messages -->
-        <div id="alert-success" class="alert-msg alert-success"></div>
-        <div id="alert-error" class="alert-msg alert-error"></div>
+        <div id="bingo-controls-alert-success" class="bingo-controls-alert bingo-controls-alert-success"></div>
+        <div id="bingo-controls-alert-error" class="bingo-controls-alert bingo-controls-alert-error"></div>
 
-        <style>
-            /* Simple toast style for prompt messages */
-            #prompt-message {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                min-width: 200px;
-                max-width: 80vw;
-                padding: 12px 24px;
-                border-radius: 6px;
-                font-size: 1rem;
-                font-weight: 600;
-                color: white;
-                background-color: #333;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.3s ease;
-                z-index: 9999;
-                text-align: center;
-            }
-        
-            #prompt-message.show {
-                opacity: 1;
-                pointer-events: auto;
-            }
-        
-            #prompt-message.success {
-                background-color: #28a745;
-                /* green */
-            }
-        
-            #prompt-message.error {
-                background-color: #dc3545;
-                /* red */
-            }
-        </style>
-        
-        <div id="prompt-message"></div>
-        
-        <style>
-            /* Simple toast style for prompt messages */
-            #prompt-message {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                min-width: 200px;
-                max-width: 80vw;
-                padding: 12px 24px;
-                border-radius: 6px;
-                font-size: 1rem;
-                font-weight: 600;
-                color: white;
-                background-color: #333;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.3s ease;
-                z-index: 9999;
-                text-align: center;
-            }
-        
-            #prompt-message.show {
-                opacity: 1;
-                pointer-events: auto;
-            }
-        
-            #prompt-message.success {
-                background-color: #28a745;
-                /* green */
-            }
-        
-            #prompt-message.error {
-                background-color: #dc3545;
-                /* red */
-            }
-        </style>
-        
-        <div id="prompt-message"></div>
-        
+        <!-- Prompt message -->
+        <div id="bingo-controls-prompt" class="bingo-controls-prompt"></div>
+
         <script>
-            const patternImages = {
+            const bingoControlsPatternImages = {
                 h: '/patters/any-horizontal.png',
                 v: '/patters/any-vertical.png',
                 d: '/patters/any-cross.png',
@@ -485,22 +450,22 @@
                 lc: '/patters/4-single-corner.png'
             };
 
-            const patternImg = document.getElementById('pattern-img');
+            const bingoControlsPatternImg = document.getElementById('bingo-controls-pattern-img');
 
-            function showImage(patternKey) {
-                if (patternImages[patternKey]) {
-                    patternImg.src = patternImages[patternKey];
-                    patternImg.style.display = 'block';
+            function bingoControlsShowImage(patternKey) {
+                if (bingoControlsPatternImages[patternKey]) {
+                    bingoControlsPatternImg.src = bingoControlsPatternImages[patternKey];
+                    bingoControlsPatternImg.style.display = 'block';
                 } else {
-                    patternImg.style.display = 'none';
+                    bingoControlsPatternImg.style.display = 'none';
                 }
             }
 
-            function hideImage() {
-                patternImg.style.display = 'none';
+            function bingoControlsHideImage() {
+                bingoControlsPatternImg.style.display = 'none';
             }
 
-            function openVoiceDB() {
+            function bingoControlsOpenVoiceDB() {
                 return new Promise((resolve, reject) => {
                     const request = indexedDB.open("VoiceDB", 1);
 
@@ -516,9 +481,9 @@
                 });
             }
 
-            async function checkVoiceInDB(voice) {
+            async function bingoControlsCheckVoiceInDB(voice) {
                 try {
-                    const db = await openVoiceDB();
+                    const db = await bingoControlsOpenVoiceDB();
                     return new Promise((resolve) => {
                         const tx = db.transaction("voices", "readonly");
                         const store = tx.objectStore("voices");
@@ -531,9 +496,9 @@
                 }
             }
 
-            async function saveVoiceToIndexedDB(voice, index, blob) {
+            async function bingoControlsSaveVoiceToIndexedDB(voice, index, blob) {
                 try {
-                    const db = await openVoiceDB();
+                    const db = await bingoControlsOpenVoiceDB();
                     return new Promise((resolve) => {
                         const tx = db.transaction("voices", "readwrite");
                         const store = tx.objectStore("voices");
@@ -546,12 +511,11 @@
                 }
             }
 
-            // Show auto-hide prompt message (toast) for 3 seconds
-            function showPrompt(type, message) {
-                const promptEl = document.getElementById('prompt-message');
+            function bingoControlsShowPrompt(type, message) {
+                const promptEl = document.getElementById('bingo-controls-prompt');
                 promptEl.textContent = message;
-                promptEl.className = ''; // reset classes
-                promptEl.classList.add(type === 'error' ? 'error' : 'success', 'show');
+                promptEl.className = 'bingo-controls-prompt'; // reset classes
+                promptEl.classList.add(type === 'error' ? 'bingo-controls-prompt-error' : 'bingo-controls-prompt-success', 'show');
 
                 // Remove after 3 seconds
                 setTimeout(() => {
@@ -559,57 +523,54 @@
                 }, 3000);
             }
 
-            async function downloadVoiceFile(voice, index) {
+            async function bingoControlsDownloadVoiceFile(voice, index) {
                 try {
                     const response = await fetch(`/mp3/${voice}/${voice}${index}.mp3`);
                     if (!response.ok) {
-                        // Silent failure — no prompt shown
                         return false;
                     }
                     const blob = await response.blob();
-                    await saveVoiceToIndexedDB(voice, index, blob);
+                    await bingoControlsSaveVoiceToIndexedDB(voice, index, blob);
                     return true;
                 } catch {
-                    // Silent failure
                     return false;
                 }
             }
 
-            async function downloadAllVoices(voice) {
-                const overlay = document.getElementById('loading-overlay');
-                const progressText = document.getElementById('progress-text');
+            async function bingoControlsDownloadAllVoices(voice) {
+                const overlay = document.getElementById('bingo-controls-loading-overlay');
+                const progressText = document.getElementById('bingo-controls-progress-text');
 
                 overlay.style.display = 'flex';
 
-                for (let i = 1; i <= 75; i++) {
-                    progressText.textContent = `Downloading voices... ${i}/75`;
-                    await downloadVoiceFile(voice, i);
+                for (let i = 1; i <= 80; i++) {
+                    progressText.textContent = `Downloading voices... ${i}/80`;
+                    await bingoControlsDownloadVoiceFile(voice, i);
                 }
 
                 overlay.style.display = 'none';
-
-                showPrompt('success', `Voice pack "${voice}" downloaded.`);
+                bingoControlsShowPrompt('success', `Voice pack "${voice}" downloaded.`);
             }
 
-            document.getElementById('voice-form').addEventListener('submit', async function (e) {
+            document.getElementById('bingo-controls-voice-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
 
-                const voice = document.getElementById('voice').value.trim();
+                const voice = document.getElementById('bingo-controls-voice').value.trim();
                 if (!voice) return;
 
                 try {
-                    const exists = await checkVoiceInDB(voice);
+                    const exists = await bingoControlsCheckVoiceInDB(voice);
 
                     if (!exists) {
-                        await downloadAllVoices(voice);
+                        await bingoControlsDownloadAllVoices(voice);
                     } else {
-                        showPrompt('success', `"${voice}" voice is already downloaded.`);
+                        bingoControlsShowPrompt('success', `"${voice}" voice is already downloaded.`);
                     }
 
                     e.target.submit();
                 } catch (err) {
                     console.error(err);
-                    showPrompt('error', 'An error occurred while saving voice.');
+                    bingoControlsShowPrompt('error', 'An error occurred while saving voice.');
                 }
             });
         </script>
